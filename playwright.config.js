@@ -14,5 +14,5 @@ const config = {
     workers: 1, // By default, all the tests are run in parallel, but we can limit the parallel run by keeping workers as 1
     reporter: 'allure-playwright',
 };
- 
+
 module.exports = config;
