@@ -5,7 +5,7 @@ const sleep = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 const waitForPaceLoader = async (page) => {
   try {
     // Wait until pace is done
-    await page.waitForSelector('.pace-done');
+    await page.waitForSelector('.pace-done',{ timeout: 60000 });
     
     // wait an extra 0.2 seconds just to be sure the page is fully loaded
     await sleep(200);
