@@ -90,6 +90,7 @@ class CalendarPage {
      * @returns {string} - The RGB value of the leave type.
      */
     async getColorOfCalendarType(leaveType) {
+      await this.availableDaysForEmployee.nth(0).click();   
       await this.addLeaveOption.click();
       await this.selectCalendarTypeDropdown.click();
       await this.page.locator(`.page-sidebar .menu .tr:has-text("${leaveType}")`).click();
