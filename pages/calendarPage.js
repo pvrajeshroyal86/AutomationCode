@@ -1,3 +1,5 @@
+const { waitForPaceLoader } = require("../utils/webUtils");
+
 class CalendarPage {
     constructor(page) {
       this.page = page;
@@ -12,6 +14,8 @@ class CalendarPage {
       this.deleteBtn = page.locator('.page-sidebar .button.red');
       this.availableDaysForEmployee = page.locator('.month-calendar-day.clickable.empty:not(.zeroSchedule):not(.nullSchedule)');
       this.closeLeaveWindow = page.locator('.close-icon-wrapper');
+      this.selectAllLeavesApplied=page.locator('.month-calendar-day.clickable:not(.zeroSchedule):not(.nullSchedule) .bar[style]');
+      this.selectOffcialHoliday=page.locator('.month-calendar-day.clickable:not(.zeroSchedule):not(.nullSchedule) .bar[style*=\'rgb(105, 33, 146)\']');  
     }
   
     /**
@@ -22,7 +26,7 @@ class CalendarPage {
       await this.addLeaveOption.click();
       await this.selectCalendarTypeDropdown.click();
       await this.page.locator(`.page-sidebar .menu .tr:has-text("${calendarType}")`).click();
-      await this.confirmBtn.click();
+      await this.confirmBtn.click();                 
     }
   
     /**
@@ -129,6 +133,21 @@ class CalendarPage {
       await this.deleteLeaveOption.click();
       await this.deleteBtn.click();
     }
+
+    async removeLeavesApplied(employeeName) {
+      await this.page.waitForSelector(`//div[@class='month-calendar-row' and contains(.,'${employeeName}')]`);
+      const personRow = this.page.locator(`//div[@class='month-calendar-row' and contains(.,'${employeeName}')]`);
+      const daysToRemove = personRow.locator(`.month-calendar-day.clickable:not(.zeroSchedule):not(.nullSchedule) .bar[style]`);
+      const daysCount = await daysToRemove.count();
+  
+      for (let index = 0; index < daysCount; index++) {
+        await daysToRemove.nth(index).click();
+      }
+      await this.selectOffcialHoliday.click();
+      await this.deleteLeaveOption.click();
+      await this.deleteBtn.click();
+    }
+
   
     /**
      * Gets the available days count for an employee.
