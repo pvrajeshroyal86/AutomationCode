@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test } = require('@playwright/test');
 const data = require('../environment.json');
 const Login = require('../pages/loginPage');
 const Calendar = require('../pages/calendarPage');
@@ -16,10 +16,10 @@ test('Apply Sick Leave', async ({ page }) => {
     await login.signIn(data.userName, data.password);
     await waitForPaceLoader(page);
 
-    const calendar = new Calendar(page);
+    const calendar = new Calendar(page);    
     await calendar.searchEmployee(employeeName);
-    await calendar.removeLeavesApplied(employeeName)
     const rgbValue = await calendar.getColorOfCalendarType(leaveType);
+    await calendar.removeSickDaysApplied(employeeName, rgbValue);
     const initialLeaveCount = await calendar.getInitialSickLeavesCountForEmployee(employeeName, rgbValue);
     const employeeAvailableDays = await calendar.getAvailableDaysCount(employeeName);
     const countOfLeaves = await calendar.selectDaysOff(employeeAvailableDays);

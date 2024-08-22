@@ -22,6 +22,7 @@ class CalendarPage {
    */
   async selectCalendarType(calendarType) {
     await this.addLeaveOption.click();
+    await this.page.waitForSelector(`.dropdown.select-dayoff-type`);
     await this.selectCalendarTypeDropdown.click();
     await this.page.locator(`.page-sidebar .menu .tr:has-text("${calendarType}")`).click();
     await this.confirmBtn.click();
@@ -125,11 +126,14 @@ class CalendarPage {
     const daysToRemove = personRow.locator(`.month-calendar-day.clickable:not(.zeroSchedule):not(.nullSchedule) .bar[style*="${rgbValue}"]`);
     const daysCount = await daysToRemove.count();
 
+    if(daysCount === 0) return;
+
     for (let index = 0; index < daysCount; index++) {
       await daysToRemove.nth(index).click();
     }
 
     await this.deleteLeaveOption.click();
+    await this.page.waitForSelector(`.page-sidebar .button.red`);
     await this.deleteBtn.click();
   }
 
