@@ -56,11 +56,10 @@ class CalendarPage {
 
   /**
    * Selects the number of days off.
-   * @param {number} daysToSelect - The number of days to select.
    * @returns {number} - The number of days selected.
    */
-  async selectDaysOff(daysToSelect) {
-    const DAYOFF_REQUEST_LIMIT = Math.floor(Math.random() * daysToSelect) + 1;
+  async selectDaysOff() {
+    const DAYOFF_REQUEST_LIMIT = 3;
     for (let index = 0; index < DAYOFF_REQUEST_LIMIT; index++) {
       await this.availableDaysForEmployee.nth(index).click();
     }

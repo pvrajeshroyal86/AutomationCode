@@ -21,8 +21,7 @@ test('Apply Sick Leave', async ({ page }) => {
     const rgbValue = await calendar.getColorOfCalendarType(leaveType);
     await calendar.removeSickDaysApplied(employeeName, rgbValue);
     const initialLeaveCount = await calendar.getInitialSickLeavesCountForEmployee(employeeName, rgbValue);
-    const employeeAvailableDays = await calendar.getAvailableDaysCount(employeeName);
-    const countOfLeaves = await calendar.selectDaysOff(employeeAvailableDays);
+    const countOfLeaves = await calendar.selectDaysOff();
     await calendar.selectCalendarType(leaveType);
     await calendar.validateSickLeavesTakenCount(employeeName, countOfLeaves, initialLeaveCount, rgbValue);
     await calendar.removeSickDaysApplied(employeeName, rgbValue);
