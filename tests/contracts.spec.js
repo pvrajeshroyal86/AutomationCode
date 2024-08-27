@@ -1,5 +1,5 @@
 
-const { test, expect } = require('@playwright/test');
+const { test } = require('@playwright/test');
 const data = require('../environment.json');
 const Login = require('../pages/loginPage');
 const newContract = require('../pages/createNewContractPage.js');
