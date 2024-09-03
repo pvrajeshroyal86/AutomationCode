@@ -1,6 +1,5 @@
 const { test } = require('@playwright/test');
 const data = require('../environment.json');
-const Login = require('../pages/loginPage');
 const Calendar = require('../pages/calendarPage');
 const { waitForPaceLoader } = require('../utils/webUtils');
 
@@ -11,9 +10,7 @@ test('Apply Sick Leave', async ({ page }) => {
     const employeeName = 'Carla Kleermaekers';
     const leaveType = 'Sick day';
 
-    const login = new Login(page);
     await page.goto(data.baseUrl + 'calendar');
-    await login.signIn(data.userName, data.password);
     await waitForPaceLoader(page);
 
     const calendar = new Calendar(page);    
