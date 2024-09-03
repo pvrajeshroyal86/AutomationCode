@@ -25,7 +25,7 @@ test('it can create a new contract template from a word document', async ({ page
   const contractType="custom_contract";
   const contractName="New Work Contract";
   const contractDescription="Hello World";
-  const filePath="fixtures/testTextdoc.docx";
+  const filePath="documents/testTextdoc.docx";
   
   const contract= new newContract(page);
 
