@@ -1,6 +1,6 @@
-const { expect } = require('@playwright/test');
+const {expect } = require('@playwright/test');
 
-class CreateNewContractPage {
+class ContractTemplatePage {
     constructor(page) {
         this.page = page;
         this.contractTypeDropdown =page.locator('form [name="type"]');
@@ -43,4 +43,4 @@ class CreateNewContractPage {
       }
 
 }
-module.exports=CreateNewContractPage;
+module.exports=ContractTemplatePage;

@@ -1,8 +1,9 @@
 
-const { test } = require('@playwright/test');
+const { test,expect } = require('@playwright/test');
 const data = require('../environment.json');
 const Login = require('../pages/loginPage');
-const newContract = require('../pages/createNewContractPage.js');
+const newContract = require('../pages/contractTemplatePage.js');
+const createContract = require('../pages/createContractPage.js');
 const { waitForPaceLoader } = require('../utils/webUtils');
 
 
@@ -41,4 +42,28 @@ test('it can create a new contract template from a word document', async ({ page
   await contract.fillBlankContractTemplate(contractDescription);
   await contract.clickOnSaveBtn();  
   await contract.verifyContractInTable(contractName);
+});
+
+test('it can add a new contract from template to a person', async ({ page }) => {
+  const login = new Login(page);
+  const contract = new createContract(page);
+  await page.goto(data.baseUrl + 'contracts/new');
+  await login.signIn(data.userName, data.password);
+  await waitForPaceLoader(page);
+  await contract.selectAssignee();
+
+  // Select contract based on template
+  await contract.selectContractType();
+
+  // Click on "Continue" button
+  await contract.clickContinue();
+
+  // Select a template
+  await contract.selectFirstTemplate();
+
+  // Click on "Continue" button
+  await contract.clickContinue();
+
+  // Expect URL to be /contracts/{contract_id}
+  await contract.expectUrlToContainContractId();
 });
