@@ -1,8 +1,10 @@
 
 const { test,expect } = require('@playwright/test');
 const data = require('../environment.json');
-const newContract = require('../pages/createNewContractPage.js');
+const newContract = require('../pages/contractTemplatePage.js');
+const createContract = require('../pages/createContractPage.js');
 const { waitForPaceLoader } = require('../utils/webUtils');
+const TestUtils = require('../utils/testUtils');
 
 
 test('it can create a new contract template from a blank template', async ({ page }) => {
@@ -39,25 +41,30 @@ test('it can create a new contract template from a word document', async ({ page
 });
 
 test('it can add a new contract from template to a person', async ({ page }) => {
-  const login = new Login(page);
+  const contract = new createContract(page);
+
+  await page.goto(data.baseUrl + 'contracts/new');
+  await waitForPaceLoader(page);
+  const employeeName=await contract.selectAssignee();
+  await contract.selectContractType('template');
+  await contract.clickContinue();
+  await contract.selectContractTemplate();
+  await contract.clickContinue();
+  await contract.expectUrlToContainContractId();
+  await page.goto(data.baseUrl + 'contracts');
+  await waitForPaceLoader(page);
+});
+
+test('it can add a new contract from pdf to a person', async ({ page }) => {
   const contract = new createContract(page);
   await page.goto(data.baseUrl + 'contracts/new');
-  await login.signIn(data.userName, data.password);
   await waitForPaceLoader(page);
   await contract.selectAssignee();
-
-  // Select contract based on template
-  await contract.selectContractType();
-
-  // Click on "Continue" button
+  await contract.selectContractType('pdf');
   await contract.clickContinue();
-
-  // Select a template
-  await contract.selectFirstTemplate();
-
-  // Click on "Continue" button
-  await contract.clickContinue();
-
-  // Expect URL to be /contracts/{contract_id}
-  await contract.expectUrlToContainContractId();
+  await page.locator('.form-section').first().locator('.radio-button-list .radio-button-list-item').nth(1).click();
+  await page.click('.blue.button');
+  await page.locator('.form-section').first().locator('input').type('PDF contract');
+  await page.setInputFiles('input#pdfUploadInput', 'tests/e2e/fixtures/test_pdf.pdf');
+  await expect(page).toHaveURL(/.*contracts\/[0-9]*/);
 });

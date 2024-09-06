@@ -13,7 +13,7 @@ const config = {
         video: 'retain-on-failure',
         storageState: './.auth/user.json',
     },
-    workers: 1,
+    workers: 4,
     reporter: 'allure-playwright',
 };
 
