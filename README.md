@@ -6,6 +6,7 @@
 2. Run `npx playwright install` to install the necessary browsers for Playwright.
 3. Run `npx playwright test` to run all the tests and generate the HTML reports.
 4. Run `npx playwright test <specific test>` to run a specific test file.
+5. Run `npx playwright test <specific test> --debug` to run a specific test in debug mode.
 
 ## Project Structure
 
