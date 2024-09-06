@@ -8,6 +8,7 @@ const generateFutureDate = () => faker.date.future().toLocaleDateString('en-GB')
 const generateGender = () => faker.helpers.arrayElement(['male', 'female', 'other']);
 const generateCountryCode = () => faker.helpers.arrayElement(['BE', 'NL', 'FR', 'DE', 'ES', 'GB']);
 const generateRelation = () => faker.helpers.arrayElement(['family', 'friend']);
+const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 module.exports = {
   generateFirstName,
@@ -17,5 +18,6 @@ module.exports = {
   generateFutureDate,
   generateGender,
   generateCountryCode,
-  generateRelation
+  generateRelation,
+  generateRandomNumber,
 };
