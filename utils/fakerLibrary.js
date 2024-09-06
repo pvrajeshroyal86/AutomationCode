@@ -8,6 +8,8 @@ const generateFutureDate = () => faker.date.future().toLocaleDateString('en-GB')
 const generateGender = () => faker.helpers.arrayElement(['male', 'female', 'other']);
 const generateCountryCode = () => faker.helpers.arrayElement(['BE', 'NL', 'FR', 'DE', 'ES', 'GB']);
 const generateRelation = () => faker.helpers.arrayElement(['family', 'friend']);
+const generateFolderName = () => faker.lorem.words(2);
+const generateDefaultFolderName = () => faker.lorem.words(2);
 
 module.exports = {
   generateFirstName,
@@ -17,5 +19,7 @@ module.exports = {
   generateFutureDate,
   generateGender,
   generateCountryCode,
-  generateRelation
+  generateRelation,
+  generateFolderName,
+  generateDefaultFolderName
 };
