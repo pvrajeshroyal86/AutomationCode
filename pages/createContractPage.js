@@ -71,10 +71,10 @@ class CreateContractPage {
       return templateName;
   }
   
-    async expectUrlToContainContractId() {
+    async expectUrlToContainContractId() {      
+      await expect(this.page).toHaveURL(/.*contracts\/[0-9]*/);
       const newContractId = this.page.url().split('/').reverse()[0];
       console.log('newContractId ', newContractId);
-      await expect(this.page).toHaveURL(/.*contracts\/[0-9]*/);
       return newContractId;
     }
 
