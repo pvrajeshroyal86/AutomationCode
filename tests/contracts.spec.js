@@ -1,10 +1,9 @@
 
 const { test,expect } = require('@playwright/test');
 const data = require('../environment.json');
-const newContract = require('../pages/contractTemplatePage.js');
-const createContract = require('../pages/createContractPage.js');
+const newContract = require('../pages/contractTemplatePage');
+const createContract = require('../pages/createContractPage');
 const { waitForPaceLoader } = require('../utils/webUtils');
-const TestUtils = require('../utils/testUtils');
 
 
 test('it can create a new contract template from a blank template', async ({ page }) => {
@@ -48,11 +47,12 @@ test('it can add a new contract from template to a person', async ({ page }) => 
   const employeeName=await contract.selectAssignee();
   await contract.selectContractType('template');
   await contract.clickContinue();
-  await contract.selectContractTemplate();
+  const contractTemplate=await contract.selectContractTemplate();
   await contract.clickContinue();
-  await contract.expectUrlToContainContractId();
+  const contractId=await contract.expectUrlToContainContractId();
   await page.goto(data.baseUrl + 'contracts');
   await waitForPaceLoader(page);
+  await contract.verifyContractInTable(contractId,employeeName,contractTemplate);
 });
 
 test('it can add a new contract from pdf to a person', async ({ page }) => {

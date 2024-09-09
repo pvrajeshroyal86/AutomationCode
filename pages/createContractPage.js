@@ -1,20 +1,27 @@
 const {expect } = require('@playwright/test');
-const TestUtils = require('../utils/testUtils');
 const { generateRandomNumber  } = require('../utils/fakerLibrary');
-const testUtils = new TestUtils();
+const { waitForPaceLoader } = require('../utils/webUtils');
+
 class CreateContractPage {
     constructor(page) {
       this.page = page;
-      this.assigneeInput = page.locator('.form-section').nth(0).locator('.SelectItem');
-      this.selectEmployee = page.locator('.form-section').nth(0).locator('.SelectItem ul li').first();
-      this.contractBasedOnTemplate = page.locator('.form-section').nth(1).locator('.radio-button-list .radio-button-list-item').first();
-      this.contractBasedOnPdf=page.locator('.form-section').nth(1).locator('.radio-button-list .radio-button-list-item').nth(1)
-      this.continueBtn = page.locator('.blue.button');
-      this.templates = page.locator('.table .clickable');
+      this.locators = {
+        assigneeInput :page.locator('.form-section').nth(0).locator('.SelectItem'),
+        selectEmployee  : page.locator('.form-section').nth(0).locator('.SelectItem ul li').first(),
+        contractBasedOnTemplate : page.locator('.form-section').nth(1).locator('.radio-button-list .radio-button-list-item').first(),
+        contractBasedOnPdf: page.locator('.form-section').nth(1).locator('.radio-button-list .radio-button-list-item').nth(1),
+        continueBtn : page.locator('.blue.button'),
+        templates : page.locator('.table .clickable'),
+        searchInput : page.locator('.table input[placeholder="search..."]'),
+        contractLink : (contractId) => this.page.locator(`a[href="/contracts/${contractId}"]`),
+        contractName : (contractId) => this.contractLink(contractId).locator('div.td').first(),
+        employeeName : (contractId) => this.contractLink(contractId).locator('div.td').nth(1),
+      };
+      
     }
  
     async selectAssignee() {
-      await this.assigneeInput.click();
+      await this.locators.assigneeInput.click();
       // const employees=await this.page.locator('.form-section').nth(0).locator('.SelectItem ul li').innerHTML;
       // const count=await employees.count();
       // console.log("Count of employees is "+count);
@@ -38,16 +45,16 @@ class CreateContractPage {
 
     async selectContractType(type) {
       if(type==='template'){
-        await this.contractBasedOnTemplate.click();
+        await this.locators.contractBasedOnTemplate.click();
        }
       else
       {
-        await this.contractBasedOnPdf.click();  
+        await this.locators.contractBasedOnPdf.click();  
       }
     }
   
     async clickContinue() {
-      await this.continueBtn.click();
+      await this.locators.continueBtn.click();
     }
   
     async selectContractTemplate() {
@@ -61,11 +68,24 @@ class CreateContractPage {
       const templateName=await this.page.locator('div.clickable span').nth(index).innerText();
       console.log("Template name is "+templateName);
       await this.page.locator('.table .clickable span').nth(index).click();
+      return templateName;
   }
   
     async expectUrlToContainContractId() {
+      const newContractId = this.page.url().split('/').reverse()[0];
+      console.log('newContractId ', newContractId);
       await expect(this.page).toHaveURL(/.*contracts\/[0-9]*/);
+      return newContractId;
     }
+
+  async verifyContractInTable(contractId,employeeName,contractTemplate)
+  {
+    await this.locators.searchInput.type(employeeName);
+    await this.page.waitForSelector(this.locators.contractLink(contractId));
+    expect(this.page.locator(this.locators.contractLink(contractId)).toHaveCount(1));
+    await expect(this.locators.contractName(contractId)).toHaveText(contractTemplate);
+    await expect(this.locators.employeeName(contractId)).toHaveText(employeeName);
   }
   
+}
   module.exports = CreateContractPage;
