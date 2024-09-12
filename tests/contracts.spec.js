@@ -4,7 +4,9 @@ const data = require('../environment.json');
 const newContract = require('../pages/contractTemplatePage');
 const createContract = require('../pages/createContractPage');
 const { waitForPaceLoader } = require('../utils/webUtils');
+const { generateRandomNumber } = require('../utils/fakerLibrary');
 
+let CONTRACT_ID;
 
 test('it can create a new contract template from a blank template', async ({ page }) => {
   const contract= new newContract(page);
@@ -39,6 +41,29 @@ test('it can create a new contract template from a word document', async ({ page
   await contract.verifyContractInTable(contractName);
 });
 
+
+test('it can add a new contract from pdf to a person', async ({ page }) => {
+  const filePath="fileManager/CourseCertificate.pdf";
+  const contract_title="PDF Contract"+generateRandomNumber(1,1000);
+  
+  const contract = new createContract(page);
+  await page.goto(data.baseUrl +'contracts/new');
+  await waitForPaceLoader(page);
+  const employeeName=await contract.selectAssignee();
+  await contract.selectContractType('pdf');
+  await contract.clickContinue();
+  await contract.selectWhoShouldSignOnContract('employee_Sign');
+  await contract.clickContinue();
+  await contract.fillContractTitle(contract_title);
+  await contract.uploadPdfDocument(filePath);
+  const contractId=await contract.expectUrlToContainContractId();
+  await page.goto(data.baseUrl + 'contracts');
+  await contract.verifyContractInTable(contractId,employeeName,contract_title);
+});
+
+
+test.describe('Contract Template Suite', () => {
+
 test('it can add a new contract from template to a person', async ({ page }) => {
   const contract = new createContract(page);
 
@@ -49,22 +74,69 @@ test('it can add a new contract from template to a person', async ({ page }) => 
   await contract.clickContinue();
   const contractTemplate=await contract.selectContractTemplate();
   await contract.clickContinue();
-  const contractId=await contract.expectUrlToContainContractId();
+  CONTRACT_ID=await contract.expectUrlToContainContractId();
   await page.goto(data.baseUrl + 'contracts');
   await waitForPaceLoader(page);
-  await contract.verifyContractInTable(contractId,employeeName,contractTemplate);
+  await contract.verifyContractInTable(CONTRACT_ID,employeeName,contractTemplate);
 });
 
-test('it can add a new contract from pdf to a person', async ({ page }) => {
+test('edit a contract content', async ({ page }) => {
   const contract = new createContract(page);
-  await page.goto(data.baseUrl + 'contracts/new');
+  const contractTextToAdd = 'This is a test contract content';
+  await page.goto(data.baseUrl + 'contracts');
   await waitForPaceLoader(page);
-  await contract.selectAssignee();
-  await contract.selectContractType('pdf');
-  await contract.clickContinue();
-  await page.locator('.form-section').first().locator('.radio-button-list .radio-button-list-item').nth(1).click();
-  await page.click('.blue.button');
-  await page.locator('.form-section').first().locator('input').type('PDF contract');
-  await page.setInputFiles('input#pdfUploadInput', 'tests/e2e/fixtures/test_pdf.pdf');
-  await expect(page).toHaveURL(/.*contracts\/[0-9]*/);
+  await page.goto(data.baseUrl +`contracts/${CONTRACT_ID}`);
+  await waitForPaceLoader(page);
+  await contract.selectContractEditOption();
+  await contract.editContractContentAndSave(contractTextToAdd);
+  const contractIdUpdated=await contract.expectUrlToContainContractId();
+  expect(CONTRACT_ID).toBe(contractIdUpdated);
+  await contract.verifyUpdatedContractContent(contractTextToAdd);
+});
+
+// test('it can download a contract', async ({ page }) => {  // not working as expected in local to complete automation
+//   const contract = new createContract(page);
+  
+//   await page.goto(data.baseUrl +`contracts/${CONTRACT_ID}`);
+//   await contract.selectContractDownloadOption();
+//   await page.waitForEvent('download')
+// });
+
+test('it can archive a contract', async ({ page }) => {
+  const contract = new createContract(page);
+
+  await page.goto(data.baseUrl + 'contracts');
+  await waitForPaceLoader(page);
+  await page.goto(data.baseUrl +`contracts/${CONTRACT_ID}`);
+  await waitForPaceLoader(page)
+  await contract.selectContractArchiveOptionAndConfirm();
+  await expect(page).toHaveURL(/.*contracts$/);
+  await page.goto(data.baseUrl +`contracts/${CONTRACT_ID}`);
+  await waitForPaceLoader(page);  
+  contract.verifyArchiveMessage();
+});
+
+test('it can unarchive a contract', async ({ page }) => {
+  const contract = new createContract(page);
+  await page.goto(data.baseUrl + 'contracts');
+  await waitForPaceLoader(page);
+  await page.goto(data.baseUrl + `contracts/1458`);
+  await waitForPaceLoader(page);
+  contract.performUnarchive() ;
+});
+});
+
+test('testing', async ({ page }) => {
+  await page.goto(data.baseUrl+`contracts/1458`);
+
+  await waitForPaceLoader(page)
+
+  // Unarchive the contract
+  await page.locator('.button:has-text("Unarchive")').click()
+
+  // Click on confirm "Unarchive" button
+  await page.locator('.modal-content .blue.button').click();
+
+  // Wait until "Unarchive" button is removed
+  await waitForElementToDisappear(page, '.button:has-text("Unarchive")');
 });
