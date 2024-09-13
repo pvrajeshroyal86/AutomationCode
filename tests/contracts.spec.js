@@ -120,7 +120,7 @@ test('it can unarchive a contract', async ({ page }) => {
   const contract = new createContract(page);
   await page.goto(data.baseUrl + 'contracts');
   await waitForPaceLoader(page);
-  await page.goto(data.baseUrl + `contracts/1458`);
+  await page.goto(data.baseUrl + `contracts/1387`);
   await waitForPaceLoader(page);
   contract.performUnarchive() ;
 });

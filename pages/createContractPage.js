@@ -182,12 +182,15 @@ class CreateContractPage {
         expect(await this.page.locator(this.locators.archiveMessageBox).innerText()).toContain('This contract has been archived');
       }
 
-      async performUnarchive() 
-      {
+      async performUnarchive() {
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }      
+        await sleep(2000); // Sleep for 10 seconds
         await this.page.locator('.button:has-text("Unarchive")').click();
         await this.page.locator('.modal-content .blue.button').click();
         await waitForElementToDisappear(this.page, '.button:has-text("Unarchive")');
-      }
+    }    
 
       async editContractContentAndSave(textToadd)
       {
