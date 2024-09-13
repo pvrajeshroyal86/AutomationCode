@@ -55,7 +55,7 @@ class DashboardPage {
     await expect(this.page).toHaveURL(/.*settings\/teams\/add/);
     await this.page.fill(this.locators.teamNameInput, teamName);
     await this.page.press(this.locators.teamNameInput, 'Enter');
-    const addPeopleTitle = this.page.locator(this.locators.mainTitle);
+    const addPeopleTitle = this.page.locator(this.locators.mainTitle);    
     await expect(addPeopleTitle).toHaveText(/Add people to .*/);
   }
 

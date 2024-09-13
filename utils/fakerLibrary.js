@@ -12,6 +12,7 @@ const generateFolderName = () => faker.lorem.words(2);
 const generateDefaultFolderName = () => faker.lorem.words(2);
 const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 const generateTeamName = () => faker.commerce.department();
+const generateSegmentName = () => faker.commerce.productName();
 
 module.exports = {
   generateFirstName,
@@ -25,5 +26,6 @@ module.exports = {
   generateFolderName,
   generateDefaultFolderName,
   generateRandomNumber,
-  generateTeamName
+  generateTeamName,
+  generateSegmentName
 };
