@@ -1,6 +1,7 @@
 const {expect } = require('@playwright/test');
+const data = require('../environment.json');
 const { generateRandomNumber  } = require('../utils/fakerLibrary');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader ,waitForElementToDisappear} = require('../utils/webUtils');
 
 class CreateContractPage {
     constructor(page) {
@@ -29,7 +30,10 @@ class CreateContractPage {
         unarchiveConfirmBtn:`.modal-content .blue.button`,
         editor :page.frameLocator('[src="/ckeditor/editor.html"]').frameLocator('.cke_wysiwyg_frame').locator('body'),
         contractEntirePage:`#SignPage`,
-        contractSaveBtn:`.blue.button`
+        contractSaveBtn:`.blue.button`,
+        deletePermanentlyBtn:`.button:has-text("Delete permanently")`,
+        checkBoxForDelete:`span:has-text("Yes, I want to permanently delete this contract")`,
+        deletePermantlyCOnfirmBtn:`.modal-content .button:has-text("Delete permanently")`,
       };
       
     }
@@ -185,12 +189,11 @@ class CreateContractPage {
       async performUnarchive() {
         function sleep(ms) {
           return new Promise(resolve => setTimeout(resolve, ms));
-        }      
-        await sleep(2000); // Sleep for 10 seconds
-        await this.page.locator('.button:has-text("Unarchive")').click();
-        await this.page.locator('.modal-content .blue.button').click();
-        await waitForElementToDisappear(this.page, '.button:has-text("Unarchive")');
-    }    
+        }
+        await this.page.locator(this.locators.unarchiveBtn).click();
+        await this.page.locator(this.locators.unarchiveConfirmBtn).click();
+        await waitForElementToDisappear(this.page, this.locators.unarchiveBtn);
+      }
 
       async editContractContentAndSave(textToadd)
       {
@@ -207,6 +210,21 @@ class CreateContractPage {
     async clickOnSaveBtn() {
       await this.page.locator(this.locators.contractSaveBtn).first().click();
       await waitForPaceLoader(this.page);
+  }
+
+  async performPermanentDeleteForContract()
+  {
+    await this.page.locator(this.locators.deletePermanentlyBtn).click();
+    await this.page.locator(this.locators.checkBoxForDelete).click();
+    await this.page.locator(this.locators.deletePermantlyCOnfirmBtn).click();
+    await waitForPaceLoader(this.page); 
+  }
+
+  async verifyUrlAfterCOntractDeletion(contractId)
+  {
+     await expect(this.page).toHaveURL(/.*contracts$/);
+     await this.page.goto(data.baseUrl+`contracts/${contractId}`);
+     expect(await this.page.locator('#toast .description').innerText()).toContain('Contract not found or you have no access.')
   }
 }
 

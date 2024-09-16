@@ -7,6 +7,7 @@ const { waitForPaceLoader } = require('../utils/webUtils');
 const { generateRandomNumber } = require('../utils/fakerLibrary');
 
 let CONTRACT_ID;
+let Pdf_CONTRACT_ID;
 
 test('it can create a new contract template from a blank template', async ({ page }) => {
   const contract= new newContract(page);
@@ -41,6 +42,7 @@ test('it can create a new contract template from a word document', async ({ page
   await contract.verifyContractInTable(contractName);
 });
 
+test.describe('Contract Pdf Suite', () => {
 
 test('it can add a new contract from pdf to a person', async ({ page }) => {
   const filePath="fileManager/CourseCertificate.pdf";
@@ -56,9 +58,44 @@ test('it can add a new contract from pdf to a person', async ({ page }) => {
   await contract.clickContinue();
   await contract.fillContractTitle(contract_title);
   await contract.uploadPdfDocument(filePath);
-  const contractId=await contract.expectUrlToContainContractId();
+  Pdf_CONTRACT_ID=await contract.expectUrlToContainContractId();
   await page.goto(data.baseUrl + 'contracts');
-  await contract.verifyContractInTable(contractId,employeeName,contract_title);
+  await contract.verifyContractInTable(Pdf_CONTRACT_ID,employeeName,contract_title);
+});
+
+test('it can download a contract', async ({ page }) => {  // not working as expected in local to complete automation
+  const contract = new createContract(page);
+  
+  await page.goto(data.baseUrl +`contracts/1474`);
+  await contract.selectContractDownloadOption();
+  await page.waitForEvent('download')
+});
+
+test('it can archive a contract', async ({ page }) => {
+  const contract = new createContract(page);
+
+  await page.goto(data.baseUrl + 'contracts');
+  await waitForPaceLoader(page);
+  await page.goto(data.baseUrl +`contracts/${Pdf_CONTRACT_ID}`);
+  await waitForPaceLoader(page)
+  await contract.selectContractArchiveOptionAndConfirm();
+  await expect(page).toHaveURL(/.*contracts$/);
+  await page.goto(data.baseUrl +`contracts/${Pdf_CONTRACT_ID}`);
+  await waitForPaceLoader(page);  
+  contract.verifyArchiveMessage();
+});
+
+test('it can delete a contract permanently', async ({ page }) => {
+  const contract= new createContract(page);
+
+  await page.goto(data.baseUrl +'contracts/new');
+  await waitForPaceLoader(page);
+  await page.goto(data.baseUrl+`contracts/${Pdf_CONTRACT_ID}`);
+  await waitForPaceLoader(page);
+  await contract.performPermanentDeleteForContract();
+  await contract.verifyUrlAfterCOntractDeletion(Pdf_CONTRACT_ID)
+});
+
 });
 
 
@@ -94,14 +131,6 @@ test('edit a contract content', async ({ page }) => {
   await contract.verifyUpdatedContractContent(contractTextToAdd);
 });
 
-// test('it can download a contract', async ({ page }) => {  // not working as expected in local to complete automation
-//   const contract = new createContract(page);
-  
-//   await page.goto(data.baseUrl +`contracts/${CONTRACT_ID}`);
-//   await contract.selectContractDownloadOption();
-//   await page.waitForEvent('download')
-// });
-
 test('it can archive a contract', async ({ page }) => {
   const contract = new createContract(page);
 
@@ -120,23 +149,9 @@ test('it can unarchive a contract', async ({ page }) => {
   const contract = new createContract(page);
   await page.goto(data.baseUrl + 'contracts');
   await waitForPaceLoader(page);
-  await page.goto(data.baseUrl + `contracts/1387`);
+  await page.goto(data.baseUrl + `contracts/${CONTRACT_ID}`);
   await waitForPaceLoader(page);
-  contract.performUnarchive() ;
+  await contract.performUnarchive() ;
 });
-});
 
-test('testing', async ({ page }) => {
-  await page.goto(data.baseUrl+`contracts/1458`);
-
-  await waitForPaceLoader(page)
-
-  // Unarchive the contract
-  await page.locator('.button:has-text("Unarchive")').click()
-
-  // Click on confirm "Unarchive" button
-  await page.locator('.modal-content .blue.button').click();
-
-  // Wait until "Unarchive" button is removed
-  await waitForElementToDisappear(page, '.button:has-text("Unarchive")');
 });

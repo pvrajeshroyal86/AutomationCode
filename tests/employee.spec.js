@@ -18,7 +18,7 @@ test('Create Employee Card', async ({ page }) => {
   await waitForPaceLoader(page);
   await createEmployeePage.validatePageHeaderAndSelectHRManualEntry();
   await waitForPaceLoader(page);
-  const newPersonId = await createEmployeePage.getEmployeeId();
+  const newPersonId =  createEmployeePage.getEmployeeId();
   await createEmployeePage.validateEmployeeCard(firstName, lastName, empEmail);
   await createEmployeePage.navigateToPeopleHomePage();
   await createEmployeePage.validateEmployeeInPeopleList(firstName, lastName, newPersonId);
