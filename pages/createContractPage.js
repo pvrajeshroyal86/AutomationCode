@@ -34,6 +34,11 @@ class CreateContractPage {
         deletePermanentlyBtn:`.button:has-text("Delete permanently")`,
         checkBoxForDelete:`span:has-text("Yes, I want to permanently delete this contract")`,
         deletePermantlyCOnfirmBtn:`.modal-content .button:has-text("Delete permanently")`,
+        signContractBtn:`.button:has-text("Sign contract")`,
+        yourNameField:`[placeholder="Enter your full name"]`,
+        signBtn:`.popup .button:has-text("Sign")`,
+        signaturePopUp:`.popup`,  
+        signatureStatus:`.status-tag`
       };
       
     }
@@ -169,7 +174,6 @@ class CreateContractPage {
       {
         await this.page.locator(this.locators.actionsDropdown).click();
         await this.page.locator(this.locators.actionsDownloadOption).click();
-        await waitForPaceLoader(this.page);
       }
 
       async selectContractArchiveOptionAndConfirm()
@@ -225,6 +229,16 @@ class CreateContractPage {
      await expect(this.page).toHaveURL(/.*contracts$/);
      await this.page.goto(data.baseUrl+`contracts/${contractId}`);
      expect(await this.page.locator('#toast .description').innerText()).toContain('Contract not found or you have no access.')
+  }
+
+  async performEmployeerSignatureAndVerifyStatus(EmployeerName)
+  {
+    await this.page.locator(this.locators.signContractBtn).click();
+    await this.page.locator(this.locators.yourNameField).fill(EmployeerName);
+    await this.page.locator(this.locators.signBtn).click();
+    await waitForElementToDisappear(this.page,this.locators.signaturePopUp);
+    const tag = await this.page.locator(this.locators.signatureStatus);
+    expect(await tag.innerText()).toContain('Signed');
   }
 }
 
