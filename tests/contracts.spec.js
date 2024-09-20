@@ -8,6 +8,7 @@ const { generateRandomNumber } = require('../utils/fakerLibrary');
 
 let CONTRACT_ID;
 let Pdf_CONTRACT_ID;
+const Pdf_CONTRACT_TITLE="PDF Contract"+generateRandomNumber(1,1000);
 
 test('it can create a new contract template from a blank template', async ({ page }) => {
   const contract= new newContract(page);
@@ -46,7 +47,6 @@ test.describe('Contract Pdf Suite', () => {
 
 test('it can add a new contract from pdf to a person', async ({ page }) => {
   const filePath="fileManager/CourseCertificate.pdf";
-  const contract_title="PDF Contract"+generateRandomNumber(1,1000);
   
   const contract = new createContract(page);
   await page.goto(data.baseUrl +'contracts/new');
@@ -56,19 +56,20 @@ test('it can add a new contract from pdf to a person', async ({ page }) => {
   await contract.clickContinue();
   await contract.selectWhoShouldSignOnContract('employee_Sign');
   await contract.clickContinue();
-  await contract.fillContractTitle(contract_title);
+  await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
   await contract.uploadPdfDocument(filePath);
   Pdf_CONTRACT_ID=await contract.expectUrlToContainContractId();
   await page.goto(data.baseUrl + 'contracts');
-  await contract.verifyContractInTable(Pdf_CONTRACT_ID,employeeName,contract_title);
+  await contract.verifyContractInTable(Pdf_CONTRACT_ID,employeeName,Pdf_CONTRACT_TITLE);
 });
 
 test('it can download a contract', async ({ page }) => {  // not working as expected in local to complete automation
   const contract = new createContract(page);
-  
-  await page.goto(data.baseUrl +`contracts/1474`);
+  await page.goto(data.baseUrl + 'contracts');
+  await waitForPaceLoader(page);
+  await page.goto(data.baseUrl +`contracts/${Pdf_CONTRACT_ID}`);
   await contract.selectContractDownloadOption();
-  await page.waitForEvent('download')
+  await page.waitForEvent('download');
 });
 
 test('it can archive a contract', async ({ page }) => {
@@ -155,3 +156,14 @@ test('it can unarchive a contract', async ({ page }) => {
 });
 
 });
+
+
+test('it can sign a contract', async ({ page }) => {      // hard coded contract number 
+  const employeerName="yolo@test.be";
+  const contract = new createContract(page);
+  await page.goto(data.baseUrl+`contracts/1388`);
+  await waitForPaceLoader(page);    
+  await contract.performEmployeerSignatureAndVerifyStatus(employeerName);
+});
+
+
