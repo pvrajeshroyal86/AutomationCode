@@ -26,25 +26,38 @@ class SegmentPage {
     await this.page.goto(this.locators.newSegmentBuilderUrl);
   }
 
-  async createSegment(segmentName) {
+  async fillSegmentName(segmentName) {
     await this.page.locator(this.locators.segmentNameInput).fill(segmentName);
+  }
+
+  async setSegmentRule(property, value) {
     const rule = await this.page.locator(this.locators.ruleFields);
-    await rule.locator(this.locators.propertySelect).selectOption('address_country_code');
-    await rule.locator(this.locators.valueSelect).selectOption('BE');
+    await rule.locator(this.locators.propertySelect).selectOption(property);
+    await rule.locator(this.locators.valueSelect).selectOption(value);
+  }
+
+  async saveSegment() {
     await this.page.locator(this.locators.saveButton).first().click();
     await this.page.waitForTimeout(1000); // wait for 1 second to make sure that the page is loaded
     await expect(this.page).toHaveURL(/.*people$/);
-    const createdSegmentName = await this.page.waitForSelector(this.locators.dropdownTarget(segmentName));
-    expect(createdSegmentName).not.toBeNull();
+  }
+
+  async verifySegmentInDropdown(segmentName) {
+    const segment = await this.page.waitForSelector(this.locators.dropdownTarget(segmentName));
+    expect(segment).not.toBeNull();
+  }
+
+  async createSegment(segmentName) {
+    await this.fillSegmentName(segmentName);
+    await this.setSegmentRule('address_country_code', 'BE');
+    await this.saveSegment();
+    await this.verifySegmentInDropdown(segmentName);
   }
 
   async editSegment(newSegmentName) {
-    await this.page.locator(this.locators.segmentNameInput).fill(newSegmentName);
-    await this.page.locator(this.locators.saveButton).first().click();
-    await this.page.waitForTimeout(1000); // wait for 1 second to make sure that the page is loaded
-    await expect(this.page).toHaveURL(/.*people$/);
-    const editedSegmentName = await this.page.waitForSelector(this.locators.dropdownTarget(newSegmentName));
-    expect(editedSegmentName).not.toBeNull();
+    await this.fillSegmentName(newSegmentName);
+    await this.saveSegment();
+    await this.verifySegmentInDropdown(newSegmentName);
   }
 
   async deleteSegment(segmentName) {
