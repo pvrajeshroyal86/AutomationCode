@@ -3,7 +3,7 @@ const { waitForPaceLoader } = require('../utils/webUtils');
 const { generateTeamName } = require('../utils/fakerLibrary');
 const DashboardPage = require('../pages/dashboardPage');
 
-test.describe('Dashboard Tests', () => {  
+test.describe('Dashboard Tests', () => {
   test('logged in with our saved state and can create/delete team', async ({ page }) => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.gotoDashboard();
