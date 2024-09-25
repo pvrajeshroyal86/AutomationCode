@@ -64,14 +64,12 @@ class SegmentPage {
   async createSegment(segmentName) {
     await this.fillSegmentName(segmentName);
     await this.setSegmentRule('address_country_code', 'BE');
-    await this.saveSegment();
-    await this.verifySegmentInDropdown(segmentName);
+    await this.saveSegmentRuleAndVerifyUrl(segmentName);
   }
 
   async editSegment(newSegmentName) {
     await this.fillSegmentName(newSegmentName);
-    await this.saveSegment();
-    await this.verifySegmentInDropdown(newSegmentName);
+    await this.saveSegmentRuleAndVerifyUrl(newSegmentName);
   }
 
   async deleteSegment(segmentName) {
