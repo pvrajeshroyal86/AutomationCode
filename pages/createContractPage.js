@@ -2,6 +2,7 @@ const {expect } = require('@playwright/test');
 const data = require('../environment.json');
 const { generateRandomNumber  } = require('../utils/fakerLibrary');
 const { waitForPaceLoader ,waitForElementToDisappear} = require('../utils/webUtils');
+const { fi } = require('@faker-js/faker');
 
 class CreateContractPage {
     constructor(page) {
@@ -38,11 +39,28 @@ class CreateContractPage {
         yourNameField:`[placeholder="Enter your full name"]`,
         signBtn:`.popup .button:has-text("Sign")`,
         signaturePopUp:`.popup`,  
-        signatureStatus:`.status-tag`
+        signatureStatus:`.status-tag`,
+        chooseSigningMethodBtn:`span:has-text("Choose signing method")`,
+        signatureSelectPopup:'.modal-content',
+        selectOfficientSignature:`img[alt="Officient signature"]`,
+        nextBtn:`.button:has-text("Next")`,
+        finishBtn:`.button:has-text("Finish")`,
+        sendToEmployeeBtn:`span:has-text("Send to employee")`, 
+        sendEmailBtn:`.blue.button`,
+        sendReminderLink:`a:has-text("Send reminder")`,
       };
       
     }
  
+    async selectFirstAssignee() { 
+      await this.locators.assigneeInput.click();
+      const employeeData=await this.page.locator('.form-section').nth(0).locator('.SelectItem ul li .inline-block.valign-middle').nth(0).innerText();
+      const employeeName=this.extractName(employeeData);
+      console.log("Employee name is "+employeeName);
+      await this.page.locator('.form-section').nth(0).locator('.SelectItem ul li').nth(0).click();
+      return employeeName;
+    }
+
     async selectAssignee() {
       await this.locators.assigneeInput.click();
       const index=generateRandomNumber(1,5);
@@ -239,6 +257,24 @@ class CreateContractPage {
     await waitForElementToDisappear(this.page,this.locators.signaturePopUp);
     const tag = await this.page.locator(this.locators.signatureStatus);
     expect(await tag.innerText()).toContain('Signed');
+  }
+
+  async chooseSignatureMethodAndSendForEmployeeSignature()
+  {
+    await this.page.locator(this.locators.chooseSigningMethodBtn).click();
+    await this.page.waitForSelector(this.locators.signatureSelectPopup, { state: 'visible' });
+    await this.page.locator(this.locators.selectOfficientSignature).click();
+    await this.page.locator(this.locators.nextBtn).click();
+    await this.page.locator(this.locators.selectOfficientSignature).click();
+    await this.page.locator(this.locators.nextBtn).click();
+    await this.page.locator(this.locators.finishBtn).click();
+    await waitForPaceLoader(this.page);
+    await this.page.locator(this.locators.sendToEmployeeBtn).click();
+    await waitForPaceLoader(this.page);
+    await this.page.locator(this.locators.sendEmailBtn).click();
+    await waitForPaceLoader(this.page);
+    const sendReminderLink = this.page.locator(this.locators.sendReminderLink);
+    await expect(sendReminderLink).toBeVisible();
   }
 }
 

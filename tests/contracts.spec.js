@@ -7,6 +7,7 @@ const { waitForPaceLoader } = require('../utils/webUtils');
 const { generateRandomNumber } = require('../utils/fakerLibrary');
 
 let CONTRACT_ID;
+let CONTRACT_ID_FOR_EMP_SIGNATURE;
 let Pdf_CONTRACT_ID;
 const Pdf_CONTRACT_TITLE="PDF Contract"+generateRandomNumber(1,1000);
 
@@ -154,16 +155,43 @@ test('it can unarchive a contract', async ({ page }) => {
   await waitForPaceLoader(page);
   await contract.performUnarchive() ;
 });
-
 });
 
+test.describe('Contract Employee Signature Suite', () => {
+
+test('it can add a new contract from template to a person', async ({ page }) => {
+  const contract = new createContract(page);
+
+  await page.goto(data.baseUrl + 'contracts/new');
+  await waitForPaceLoader(page);
+  const employeeName=await contract.selectFirstAssignee();
+  await contract.selectContractType('template');
+  await contract.clickContinue();
+  const contractTemplate=await contract.selectContractTemplate();
+  await contract.clickContinue();
+  CONTRACT_ID_FOR_EMP_SIGNATURE=await contract.expectUrlToContainContractId();
+  await page.goto(data.baseUrl + 'contracts');
+  await waitForPaceLoader(page);
+  await contract.verifyContractInTable(CONTRACT_ID_FOR_EMP_SIGNATURE,employeeName,contractTemplate);
+});
+
+test('choose signature method and send for employee signature', async ({ page }) => {
+  const contract= new createContract(page);
+
+  await page.goto(data.baseUrl +'contracts');
+  await waitForPaceLoader(page);
+  await page.goto(data.baseUrl+`contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
+  await waitForPaceLoader(page);
+  await contract.chooseSignatureMethodAndSendForEmployeeSignature();
+});
 
 test('it can sign a contract', async ({ page }) => {      // hard coded contract number 
   const employeerName="yolo@test.be";
   const contract = new createContract(page);
-  await page.goto(data.baseUrl+`contracts/1388`);
+  await page.goto(data.baseUrl+`contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
   await waitForPaceLoader(page);    
   await contract.performEmployeerSignatureAndVerifyStatus(employeerName);
 });
 
+});
 
