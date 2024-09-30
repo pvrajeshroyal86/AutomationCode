@@ -24,8 +24,10 @@ class CreateContractPage {
         actionsDropdown: '.page .dropdown',
         actionsEditOption:`.dropdown span:has-text("Edit contract")`,
         actionsDownloadOption:`.dropdown span:has-text("Download PDF")`,
+        actionsResetSigningOption:`.dropdown span:has-text("Reset signing method")`,
         actionsArchiveOption:`.dropdown span:has-text("Archive")`,
         archiveConfirmBtn:`button:has-text("Confirm")`,
+        ResetSigningContinueBtn:`.button:has-text("Continue")`,
         archiveMessageBox:`.box-red`,
         unarchiveBtn:`.button:has-text("Unarchive")`,
         unarchiveConfirmBtn:`.modal-content .blue.button`,
@@ -48,8 +50,28 @@ class CreateContractPage {
         sendToEmployeeBtn:`span:has-text("Send to employee")`, 
         sendEmailBtn:`.blue.button`,
         sendReminderLink:`a:has-text("Send reminder")`,
+        fillEmailForEmployee:`p.explain:has-text("Please enter at least one of the following email")`,
+        selectPreferredLanguage:`p.explain:has-text("Select a preferred language")`,
+        languageDropdown:`#preferred_language`,
+        workEmailField:`#inputemail`,
+        saveChangesBtn:`.button:has-text("Save changes")`,
+        actionsContractsLandingPage:`.dropdown .button`,
+        addContractsInBulk:`span:has-text("Add contracts in bulk")`,
+        selectOptionContractPdfBulk:page.locator('.radio-button-list  .radio-button-list-item').nth(1),
+        selectOptionContractTemplateBulk:page.locator('.radio-button-list  .radio-button-list-item').nth(0),
+        selectContractTemplateForBulk:`.button:has-text("Select a contract")`,
+        sendEmailsBulkToggleBtn:'.input-switch__core',
+        employeesToSelectBulk:`.grouped .checkboxes .unchecked`,
+        addContractBulkLink: (peopleCount) => `.buttons div:has-text("Add contract to ${peopleCount} people")`,
+        employeedAddedContractrBulk:`.bulk-report-item`,
+        continueBtnBulk:`.button:has-text('Continue')`
       };
       
+    }
+
+    async selectLanguageFromDropdown() 
+    {
+      await this.page.locator(this.locators.languageDropdown).selectOption('en');
     }
  
     async selectFirstAssignee() { 
@@ -203,6 +225,23 @@ class CreateContractPage {
         await waitForPaceLoader(this.page);
       }
 
+      async selectContractResetSignOptionAndConfirm()
+      {
+        await this.page.locator(this.locators.actionsDropdown).click();
+        await this.page.locator(this.locators.actionsResetSigningOption).click();
+        await this.page.locator(this.locators.ResetSigningContinueBtn).click();
+        await waitForPaceLoader(this.page);
+      }
+
+      async selectContractArchiveOptionAndConfirm()
+      {
+        await this.page.locator(this.locators.actionsDropdown).click();
+        await this.page.locator(this.locators.actionsArchiveOption).click();
+        await waitForPaceLoader(this.page);
+        await this.page.locator(this.locators.archiveConfirmBtn).click();
+        await waitForPaceLoader(this.page);
+      }
+
       async verifyArchiveMessage()
       {
         expect(await this.page.locator(this.locators.archiveMessageBox).innerText()).toContain('This contract has been archived');
@@ -259,7 +298,7 @@ class CreateContractPage {
     expect(await tag.innerText()).toContain('Signed');
   }
 
-  async chooseSignatureMethodAndSendForEmployeeSignature()
+  async chooseSignatureMethodAndSendForEmployeeSignature(workEmail)
   {
     await this.page.locator(this.locators.chooseSigningMethodBtn).click();
     await this.page.waitForSelector(this.locators.signatureSelectPopup, { state: 'visible' });
@@ -271,11 +310,143 @@ class CreateContractPage {
     await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.sendToEmployeeBtn).click();
     await waitForPaceLoader(this.page);
+    const explainTextElement = await this.page.locator(this.locators.fillEmailForEmployee);
+    if (await explainTextElement.isVisible()) 
+    {
+        console.log("work email has to be filled, proceeding with alternate flow");
+        await this.page.locator(this.locators.workEmailField).fill(workEmail);
+        await this.page.locator(this.locators.saveChangesBtn).click();
+        await waitForPaceLoader(this.page);
+        const explainTextElement1 = await this.page.locator(this.locators.selectPreferredLanguage);
+        if(await explainTextElement1.isVisible())
+        {
+            console.log("Language is not selected proceeding with alternate flow");
+            await this.page.locator(this.locators.languageDropdown).selectOption('en');
+            await this.page.locator(this.locators.saveChangesBtn).click();
+            await waitForPaceLoader(this.page);
+        }
+        await this.page.locator(this.locators.sendEmailBtn).click();
+    }
+    else 
+    {
+      console.log("work email is already filled, proceeding with normal flow");
+      await this.page.locator(this.locators.sendEmailBtn).click();
+    }
+    await waitForPaceLoader(this.page);
+    const sendReminderLink = this.page.locator(this.locators.sendReminderLink);
+    await expect(sendReminderLink).toBeVisible()
+  }
+
+async ResetSignatureMethodForContract()
+{
+    await this.selectContractResetSignOptionAndConfirm();
+    const chooseSignMethod = this.page.locator(this.locators.chooseSigningMethodBtn);
+    await expect(chooseSignMethod).toBeVisible();
+}
+
+async SendReminderAndVerify()
+{
+    await this.page.locator(this.locators.sendReminderLink).click();
+    await waitForPaceLoader(this.page);
+    await this.page.locator(this.locators.sendEmailBtn).click();
+    expect(await this.page.locator('#toast .title').innerText()).toContain('Contract has been sent');
+}
+
+async verifyForEmployeeSignature()
+{
+    await this.page.locator(this.locators.chooseSigningMethodBtn).click();
+    await this.page.waitForSelector(this.locators.signatureSelectPopup, { state: 'visible' });
+    await this.page.locator(this.locators.selectOfficientSignature).click();
+    await this.page.locator(this.locators.nextBtn).click();
+    await this.page.locator(this.locators.finishBtn).click();
+    await waitForPaceLoader(this.page);
+    await this.page.locator(this.locators.sendToEmployeeBtn).click();
+    await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.sendEmailBtn).click();
     await waitForPaceLoader(this.page);
     const sendReminderLink = this.page.locator(this.locators.sendReminderLink);
     await expect(sendReminderLink).toBeVisible();
+}
+
+async verifyForNoSignature()
+{
+  const tag = await this.page.locator(this.locators.signatureStatus);
+  expect(await tag.innerText()).toContain('Signed');
+}
+
+async selectBulkContractCreationOption()
+{
+  await this.page.locator(this.locators.actionsContractsLandingPage).click();
+  await this.page.locator(this.locators.addContractsInBulk).click();
+}
+
+async selectBulkContractType(type)
+{
+  if(type==='pdf')
+  {
+    this.locators.selectOptionContractPdfBulk.click();
   }
+  else
+  {
+    this.locators.selectOptionContractTemplateBulk.click();
+  } 
+}
+
+async sendEmailBulkForContracts()
+{ 
+  await this.page.locator(this.locators.sendEmailsBulkToggleBtn).click();   
+}
+
+async selectEmployeesForBulkContracts()
+{
+  await this.page.waitForSelector(this.locators.employeesToSelectBulk, { state: 'visible' });
+  const elements = await this.page.$$(this.locators.employeesToSelectBulk); // Using $$ for finding all matching elements
+  const count = elements.length;
+  console.log('Number of employees avilable:', count);
+  const index = count > 5 ? generateRandomNumber(1, 5) : 1;
+  console.log("Index is " + index);
+  // If index is 5, select all the first 5 elements
+  if (count>5) 
+  {
+    for (let i = 0; i < index; i++) 
+    {
+      await this.page.locator(this.locators.employeesToSelectBulk).nth(i).click();  // Assuming clicking on the element selects it
+    }
+  } 
+  else 
+  {
+    await this.page.locator(this.locators.employeesToSelectBulk).nth(i).click();  // Select the element at the index (1-based index)
+  }
+  return index;
+}
+
+async clickOnAddContractBulkLink(peopleCount)
+{
+  await this.page.locator(this.locators.addContractBulkLink(peopleCount)).click();
+}
+
+async verifyCountOfContractsAddedInBulk(peopleCount)  
+{
+  await this.page.waitForSelector(this.locators.employeedAddedContractrBulk, { state: 'visible' });
+  const elements = await this.page.$$(this.locators.employeedAddedContractrBulk); // Using $$ for finding all matching elements
+  const count = elements.length;
+  expect(count).toBe(peopleCount);
+}
+
+async addContractsInBulkAndVerify()
+{
+  await this.selectBulkContractCreationOption();
+  await this.selectBulkContractType('template');
+  await this.sendEmailBulkForContracts();
+  await this.page.locator(this.locators.selectContractTemplateForBulk).click();
+  await this.selectContractTemplate();
+  await this.page.locator(this.locators.continueBtnBulk).click();
+  const count=await this.selectEmployeesForBulkContracts();
+  await this.clickOnAddContractBulkLink(count);
+  await this.verifyCountOfContractsAddedInBulk(count);
+  await this.page.locator(this.locators.finishBtn).click();
+}
+
 }
 
   module.exports = CreateContractPage;
