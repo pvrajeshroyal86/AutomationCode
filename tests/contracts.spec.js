@@ -1,10 +1,9 @@
-
 const { test, expect } = require('@playwright/test');
 const data = require('../environment.json');
 const newContract = require('../pages/contractTemplatePage');
 const createContract = require('../pages/createContractPage');
 const { waitForPaceLoader } = require('../utils/webUtils');
-const { generateRandomNumber ,generateEmail} = require('../utils/fakerLibrary');
+const { generateRandomNumber, generateEmail } = require('../utils/fakerLibrary');
 
 let CONTRACT_ID;
 let CONTRACT_ID_FOR_EMP_SIGNATURE;
@@ -46,23 +45,8 @@ test('it can create a new contract template from a word document', async ({ page
 
 test.describe('Contract Pdf Suite', () => {
 
-test('it can add a new contract from pdf to a person', async ({ page }) => {
-  const filePath="fileManager/CourseCertificate.pdf";
-  
-  const contract = new createContract(page);
-  await page.goto(data.baseUrl +'contracts/new');
-  await waitForPaceLoader(page);
-  const employeeName=await contract.selectAssignee();
-  await contract.selectContractType('pdf');
-  await contract.clickContinue();
-  await contract.selectWhoShouldSignOnContract('employee_Employer_Sign');
-  await contract.clickContinue();
-  await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
-  await contract.uploadPdfDocument(filePath);
-  Pdf_CONTRACT_ID=await contract.expectUrlToContainContractId();
-  await page.goto(data.baseUrl + 'contracts');
-  await contract.verifyContractInTable(Pdf_CONTRACT_ID,employeeName,Pdf_CONTRACT_TITLE);
-});
+  test('it can add a new contract from pdf to a person', async ({ page }) => {
+    const filePath = "fileManager/CourseCertificate.pdf";
 
     const contract = new createContract(page);
     await page.goto(data.baseUrl + 'contracts/new');
@@ -70,7 +54,7 @@ test('it can add a new contract from pdf to a person', async ({ page }) => {
     const employeeName = await contract.selectAssignee();
     await contract.selectContractType('pdf');
     await contract.clickContinue();
-    await contract.selectWhoShouldSignOnContract('employee_Sign');
+    await contract.selectWhoShouldSignOnContract('employee_Employer_Sign');
     await contract.clickContinue();
     await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
     await contract.uploadPdfDocument(filePath);
@@ -177,92 +161,91 @@ test.describe('Contract Employee Signature Suite', () => {
   test('it can add a new contract from template to a person', async ({ page }) => {
     const contract = new createContract(page);
 
-  await page.goto(data.baseUrl + 'contracts/new');
-  await waitForPaceLoader(page);
-  await contract.selectFirstAssignee();
-  await contract.selectContractType('template');
-  await contract.clickContinue();
-  await contract.selectContractTemplate();
-  await contract.clickContinue();
-  CONTRACT_ID_FOR_EMP_SIGNATURE=await contract.expectUrlToContainContractId();
-});
-
-test('choose signature method and send for employee signature', async ({ page }) => {
-  const contract= new createContract(page);
-  const workEmail=generateEmail();
-  await page.goto(data.baseUrl +'contracts');
-  await waitForPaceLoader(page);
-  await page.goto(data.baseUrl+`contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
-  await waitForPaceLoader(page);
-  await contract.chooseSignatureMethodAndSendForEmployeeSignature(workEmail);
-});
-
-test('it can sign a contract for employeer', async ({ page }) => {      // hard coded contract number 
-  const employeerName="yolo@test.be";
-  const contract = new createContract(page);
-  await page.goto(data.baseUrl+`contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
-  await waitForPaceLoader(page);    
-  await contract.performEmployeerSignatureAndVerifyStatus(employeerName);
-});
-
-test('Reminder functionality for employee', async ({ page }) => {
-  const contract= new createContract(page);
-
-  await page.goto(data.baseUrl +'contracts');
-  await waitForPaceLoader(page);
-  await page.goto(data.baseUrl+`contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
-  await waitForPaceLoader(page);
-  await contract.SendReminderAndVerify();
-});
-
-test('Contract Signature Reset', async ({ page }) => {
-  const contract= new createContract(page);
-
-  await page.goto(data.baseUrl +'contracts');
-  await waitForPaceLoader(page);
-  await page.goto(data.baseUrl+`contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
-  await waitForPaceLoader(page);
-  await contract.ResetSignatureMethodForContract();
-});
-
-test('Check for Employee Signature', async ({ page }) => {
-  const filePath="fileManager/CourseCertificate.pdf";
-  
-  const contract = new createContract(page);
-  await page.goto(data.baseUrl +'contracts/new');
-  await waitForPaceLoader(page);
-  await contract.selectFirstAssignee();
-  await contract.selectContractType('pdf');
-  await contract.clickContinue();
-  await contract.selectWhoShouldSignOnContract('employee_Sign');
-  await contract.clickContinue();
-  await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
-  await contract.uploadPdfDocument(filePath);
-  await contract.verifyForEmployeeSignature();
-});
-
-test('Check for No Signature', async ({ page }) => {
-  const filePath="fileManager/CourseCertificate.pdf";
-  
-  const contract = new createContract(page);
-  await page.goto(data.baseUrl +'contracts/new');
-  await waitForPaceLoader(page);
-  await contract.selectFirstAssignee();
-  await contract.selectContractType('pdf');
-  await contract.clickContinue();
-  await contract.selectWhoShouldSignOnContract('nobody');
-  await contract.clickContinue();
-  await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
-  await contract.uploadPdfDocument(filePath);
-  await contract.verifyForNoSignature();
-});
-  
+    await page.goto(data.baseUrl + 'contracts/new');
+    await waitForPaceLoader(page);
+    await contract.selectFirstAssignee();
+    await contract.selectContractType('template');
+    await contract.clickContinue();
+    await contract.selectContractTemplate();
+    await contract.clickContinue();
+    CONTRACT_ID_FOR_EMP_SIGNATURE = await contract.expectUrlToContainContractId();
   });
+
+  test('choose signature method and send for employee signature', async ({ page }) => {
+    const contract = new createContract(page);
+    const workEmail = generateEmail();
+    await page.goto(data.baseUrl + 'contracts');
+    await waitForPaceLoader(page);
+    await page.goto(data.baseUrl + `contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
+    await waitForPaceLoader(page);
+    await contract.chooseSignatureMethodAndSendForEmployeeSignature(workEmail);
+  });
+
+  test('it can sign a contract for employeer', async ({ page }) => {      // hard coded contract number
+    const employeerName = "yolo@test.be";
+    const contract = new createContract(page);
+    await page.goto(data.baseUrl + `contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
+    await waitForPaceLoader(page);
+    await contract.performEmployeerSignatureAndVerifyStatus(employeerName);
+  });
+
+  test('Reminder functionality for employee', async ({ page }) => {
+    const contract = new createContract(page);
+
+    await page.goto(data.baseUrl + 'contracts');
+    await waitForPaceLoader(page);
+    await page.goto(data.baseUrl + `contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
+    await waitForPaceLoader(page);
+    await contract.SendReminderAndVerify();
+  });
+
+  test('Contract Signature Reset', async ({ page }) => {
+    const contract = new createContract(page);
+
+    await page.goto(data.baseUrl + 'contracts');
+    await waitForPaceLoader(page);
+    await page.goto(data.baseUrl + `contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
+    await waitForPaceLoader(page);
+    await contract.ResetSignatureMethodForContract();
+  });
+
+  test('Check for Employee Signature', async ({ page }) => {
+    const filePath = "fileManager/CourseCertificate.pdf";
+
+    const contract = new createContract(page);
+    await page.goto(data.baseUrl + 'contracts/new');
+    await waitForPaceLoader(page);
+    await contract.selectFirstAssignee();
+    await contract.selectContractType('pdf');
+    await contract.clickContinue();
+    await contract.selectWhoShouldSignOnContract('employee_Sign');
+    await contract.clickContinue();
+    await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
+    await contract.uploadPdfDocument(filePath);
+    await contract.verifyForEmployeeSignature();
+  });
+
+  test('Check for No Signature', async ({ page }) => {
+    const filePath = "fileManager/CourseCertificate.pdf";
+
+    const contract = new createContract(page);
+    await page.goto(data.baseUrl + 'contracts/new');
+    await waitForPaceLoader(page);
+    await contract.selectFirstAssignee();
+    await contract.selectContractType('pdf');
+    await contract.clickContinue();
+    await contract.selectWhoShouldSignOnContract('nobody');
+    await contract.clickContinue();
+    await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
+    await contract.uploadPdfDocument(filePath);
+    await contract.verifyForNoSignature();
+  });
+
+});
 
 test('add contracts in bulk and verify', async ({ page }) => {
   const contract = new createContract(page);
-  await page.goto(data.baseUrl +'contracts');
+  await page.goto(data.baseUrl + 'contracts');
   await waitForPaceLoader(page);
   await contract.addContractsInBulkAndVerify();
 });
-
