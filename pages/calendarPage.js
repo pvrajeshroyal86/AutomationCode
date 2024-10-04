@@ -92,7 +92,7 @@ class CalendarPage {
    * @returns {string} - The RGB value of the leave type.
    */
   async getColorOfCalendarType(leaveType) {
-    await this.availableDaysForEmployee.nth(0).click();   
+    await this.availableDaysForEmployee.nth(0).click();
     await this.addLeaveOption.click();
     await this.selectCalendarTypeDropdown.click();
     await this.page.locator(`.page-sidebar .menu .tr:has-text("${leaveType}")`).click();
@@ -125,7 +125,7 @@ class CalendarPage {
     const daysToRemove = personRow.locator(`.month-calendar-day.clickable:not(.zeroSchedule):not(.nullSchedule) .bar[style*="${rgbValue}"]`);
     const daysCount = await daysToRemove.count();
 
-    if(daysCount === 0) return;
+    if (daysCount === 0) return;
 
     for (let index = 0; index < daysCount; index++) {
       await daysToRemove.nth(index).click();

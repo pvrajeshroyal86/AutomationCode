@@ -18,7 +18,7 @@ class SegmentPage {
       dropdownTarget: (segmentName) => `#dropdown-target:has-text("${segmentName}")`,
       deleteButton: '.button.red',
       dropdown: '.page .dropdown',
-      FetchRule:'.three.fields',
+      FetchRule: '.three.fields',
       addSegmentRuleBtn: '.button:has-text("Add new rule")',
     };
   }
@@ -85,8 +85,8 @@ class SegmentPage {
     return rule;
   }
 
-  async selectPropertyAndTextValue(ruleNo, property,value) {
-    const rule=await this.selectRuleNumberToAdd(ruleNo);
+  async selectPropertyAndTextValue(ruleNo, property, value) {
+    const rule = await this.selectRuleNumberToAdd(ruleNo);
     await rule.locator(this.locators.propertySelect).selectOption(property);
     // const valueSelectExists = await rule.locator(this.locators.valueSelect).count();
     // if (valueSelectExists > 0) { // If valueSelect exists, select the option
@@ -97,14 +97,14 @@ class SegmentPage {
     //}
   }
 
-  async selectPropertyAndDropdownValue(ruleNo, property,value) {
-    const rule=await this.selectRuleNumberToAdd(ruleNo);
+  async selectPropertyAndDropdownValue(ruleNo, property, value) {
+    const rule = await this.selectRuleNumberToAdd(ruleNo);
     await rule.locator(this.locators.propertySelect).selectOption(property);
     await rule.locator(this.locators.valueSelectDropdown).selectOption(value);
   }
 
   async selectSePropertyCondionValue(ruleNo, property, condition, value) {
-    const rule=await this.selectRuleNumberToAdd(ruleNo);
+    const rule = await this.selectRuleNumberToAdd(ruleNo);
     await rule.locator(this.locators.propertySelect).selectOption(property);
     await rule.locator(this.locators.ruleCondition).selectOption(condition);
     await rule.locator(this.locators.valueSelect).selectOption(value);

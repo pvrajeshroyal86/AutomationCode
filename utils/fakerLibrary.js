@@ -15,6 +15,7 @@ const generateTeamName = () => faker.commerce.department();
 const generateSegmentName = () => faker.commerce.productName();
 const generateVendorName = () => faker.company.name();
 const generateSerialNumber = () => faker.string.uuid();
+const generateUserEmail = () => `${Math.floor(Math.random() * 10000000000)}@offiqa.com`;
 
 module.exports = {
   generateFirstName,
@@ -31,5 +32,6 @@ module.exports = {
   generateTeamName,
   generateSegmentName,
   generateVendorName,
-  generateSerialNumber
+  generateSerialNumber,
+  generateUserEmail
 };

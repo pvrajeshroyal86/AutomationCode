@@ -28,7 +28,7 @@ class AssetPage {
 
   async addNewCustomField(name) {
     await waitForPaceLoader(this.page);
-    await this.page.locator(this.locators.addNewCustomFieldButton).click();    
+    await this.page.locator(this.locators.addNewCustomFieldButton).click();
     await this.page.locator(this.locators.customFieldNameInput).fill(name);
     await this.page.locator(this.locators.objectTypeSelect).first().selectOption({ label: 'Asset' });
     await this.page.locator(this.locators.customFieldTypeSelect).nth(1).selectOption({ label: 'Date' });
@@ -55,7 +55,7 @@ class AssetPage {
     await this.page.locator(this.locators.assetItem).first().click();
     await this.page.locator(this.locators.editIcon).click();
     await this.page.locator(this.locators.reminderDateInput).first().fill(reminderDate);
-    await this.page.locator(this.locators.saveChangesButton).click();    
+    await this.page.locator(this.locators.saveChangesButton).click();
   }
 
   async verifyReminder(reminderDate) {
