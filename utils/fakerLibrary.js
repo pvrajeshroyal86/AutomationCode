@@ -16,6 +16,7 @@ const generateSegmentName = () => faker.commerce.productName();
 const generateVendorName = () => faker.company.name();
 const generateSerialNumber = () => faker.string.uuid();
 const generateUserEmail = () => `${Math.floor(Math.random() * 10000000000)}@offiqa.com`;
+const generateCalendarTypeName = () => faker.commerce.productAdjective() + faker.commerce.department() + new Date().toISOString();
 
 module.exports = {
   generateFirstName,
@@ -33,5 +34,6 @@ module.exports = {
   generateSegmentName,
   generateVendorName,
   generateSerialNumber,
-  generateUserEmail
+  generateUserEmail,
+  generateCalendarTypeName
 };
