@@ -19,6 +19,7 @@ test('Create Employee Card', async ({ page }) => {
   await createEmployeePage.validatePageHeaderAndSelectHRManualEntry();
   await waitForPaceLoader(page);
   const newPersonId = await createEmployeePage.getEmployeeId();
+  console.log('New Person ID: ' + newPersonId);
   await createEmployeePage.validateEmployeeCard(firstName, lastName, empEmail);
   await createEmployeePage.navigateToPeopleHomePage();
   await createEmployeePage.validateEmployeeInPeopleList(firstName, lastName, newPersonId);
