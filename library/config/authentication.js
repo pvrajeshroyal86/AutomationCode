@@ -1,6 +1,6 @@
 const { chromium } = require('@playwright/test');
-const data = require('../environment.json');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const data = require('../../environment.json');
+const { waitForPaceLoader } = require('../../library/utils/webUtils');
 
 module.exports = async config => {
     const browser = await chromium.launch({headless: true});

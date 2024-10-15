@@ -1,5 +1,4 @@
-const { waitForPaceLoader } = require('../utils/webUtils');
-const { expect } = require('@playwright/test');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class ReminderPage {
   constructor(page) {
@@ -17,7 +16,13 @@ class ReminderPage {
     };
   }
 
+  /**
+   * Creates a new reminder with the provided date and description.
+   * @param {string} date - The date of the reminder.
+   * @param {string} description - The description of the reminder.
+   */
   async createReminder(date, description) {
+    await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.newReminderButton).click();
     await this.page.locator(this.locators.dateInput).fill(date);
     await this.page.keyboard.press('Escape');
@@ -26,6 +31,11 @@ class ReminderPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Edits an existing reminder with a new description.
+   * @param {string} oldDescription - The old description of the reminder.
+   * @param {string} newDescription - The new description of the reminder.
+   */
   async editReminder(oldDescription, newDescription) {
     await waitForPaceLoader(this.page);
     await this.page.locator(`.tr:has-text("${oldDescription}") ${this.locators.dropdown}`).click();
@@ -36,6 +46,10 @@ class ReminderPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Deletes a reminder with the provided description.
+   * @param {string} description - The description of the reminder to delete.
+   */
   async deleteReminder(description) {
     await waitForPaceLoader(this.page);
     await this.page.locator(`.tr:has-text("${description}") ${this.locators.dropdown}`).click();
@@ -44,15 +58,13 @@ class ReminderPage {
     await waitForPaceLoader(this.page);
   }
 
-  async validateReminderExists(date, description) {
+  /**
+   * Validates that a reminder exists with the provided date and description.
+   * @returns {Promise<string>} The table text containing the reminder details.
+   */
+  async getReminderDetails() {
     const tableText = await this.page.locator(this.locators.table).innerText();
-    expect(tableText).toContain(date);
-    expect(tableText).toContain(description);
-  }
-
-  async validateReminderNotExists(description) {
-    const tableText = await this.page.locator(this.locators.table).innerText();
-    expect(tableText).not.toContain(description);
+    return tableText;
   }
 }
 

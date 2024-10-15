@@ -1,5 +1,5 @@
 const config = {
-    globalSetup: require.resolve('./config/authentication.js'),
+    globalSetup: require.resolve('./library/config/authentication.js'),
     testDir: './tests',
     timeout: 100 * 1000,
     expect: {
@@ -12,6 +12,7 @@ const config = {
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
         storageState: './.auth/user.json',
+        trace: 'on', // Enable tracing
     },
     workers: 1,
     reporter: 'allure-playwright',

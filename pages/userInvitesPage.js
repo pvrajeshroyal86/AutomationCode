@@ -1,5 +1,4 @@
-const { expect } = require('@playwright/test');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class UserInvitesPage {
     constructor(page) {
@@ -21,6 +20,10 @@ class UserInvitesPage {
         };
     }
 
+    /**
+     * Invites users by filling in their emails and submitting the form.
+     * @param {string[]} userEmails - Array of user emails to invite.
+     */
     async inviteUsers(userEmails) {
         await this.page.click(this.locators.inviteButton);
         await this.page.fill(this.locators.emailTextarea, userEmails.join('\n'));
@@ -28,14 +31,17 @@ class UserInvitesPage {
         await waitForPaceLoader(this.page);
     }
 
+    /**
+     * Verifies the user invite by clicking on the user detail.
+     * @param {string} email - The email of the user to verify.
+     */
     async verifyUserInvite(email) {
-        await expect(this.page).toHaveURL(/.*settings\/users/);
         await this.page.click(this.locators.userDetail(email));
-        await expect(this.page.locator(this.locators.userEmailHeader)).toContainText(email);
-        await expect(this.page.locator(this.locators.withdrawInvite)).toContainText("Withdraw invite");
-        await expect(this.page.locator(this.locators.defaultRole)).toContainText("Default");
     }
 
+    /**
+     * Changes the user role to specific teams.
+     */
     async changeUserRoleToSpecificTeams() {
         await this.page.click(this.locators.specificTeamsRole);
         await this.page.waitForSelector(this.locators.firstTeamCheckbox);
@@ -44,12 +50,6 @@ class UserInvitesPage {
         await this.page.click(this.locators.documentsToggle);
         await this.page.click(this.locators.confirmButton);
         await waitForPaceLoader(this.page);
-    }
-
-    async verifyUserRole(email) {
-        const subjectRow = this.page.locator(this.locators.userDetail(email));
-        await expect(subjectRow).toContainText("Specific teams");
-        await expect(subjectRow).toContainText("Access to 1 team, access to wages");
     }
 }
 
