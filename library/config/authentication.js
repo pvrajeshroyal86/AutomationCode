@@ -8,6 +8,7 @@ module.exports = async config => {
 
     try {
         await page.goto(data.baseUrl);
+        await waitForPaceLoader(page);
         await page.locator('button.btn-auth').first().click();
         await page.locator('input#username').fill(data.userName);
         await page.locator('input#username').press('Tab');
