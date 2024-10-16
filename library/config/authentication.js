@@ -1,6 +1,6 @@
 const { chromium } = require('@playwright/test');
-const data = require('../environment.json');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const data = require('../../environment.json');
+const { waitForPaceLoader } = require('../../library/utils/webUtils');
 
 module.exports = async config => {
     const browser = await chromium.launch({headless: true});
@@ -14,7 +14,7 @@ module.exports = async config => {
         await page.locator('input#password').fill(data.password);
         await page.locator('button.btn-auth').click();
         await waitForPaceLoader(page);
-        await page.context().storageState({ path: './.auth/user.json' });
+        await page.context().storageState({ path: './library/.auth/user.json' });
     } catch (error) {
         console.error('Error during sign-in:', error);
     } finally {

@@ -1,6 +1,5 @@
-const { expect } = require('@playwright/test');
 const data = require('../environment.json');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class SegmentPage {
   constructor(page) {
@@ -23,86 +22,117 @@ class SegmentPage {
     };
   }
 
+  /**
+   * Navigates to the segment builder page for a specific segment ID.
+   * @param {number} id - The ID of the segment to edit.
+   */
   async gotoSegmentBuilder(id) {
     await this.page.goto(this.locators.segmentBuilderUrl(id));
   }
 
+  /**
+   * Navigates to the new segment builder page.
+   */
   async gotoNewSegmentBuilder() {
     await this.page.goto(this.locators.newSegmentBuilderUrl);
   }
 
+  /**
+   * Fills in the segment name.
+   * @param {string} segmentName - The name of the segment.
+   */
   async fillSegmentName(segmentName) {
     await this.page.locator(this.locators.segmentNameInput).fill(segmentName);
   }
 
+  /**
+   * Sets a rule for the segment.
+   * @param {string} property - The property to set.
+   * @param {string} value - The value to set for the property.
+   */
   async setSegmentRule(property, value) {
     const rule = await this.page.locator(this.locators.ruleFields);
     await rule.locator(this.locators.propertySelect).selectOption(property);
     await rule.locator(this.locators.valueSelect).selectOption(value);
   }
 
-  async saveSegmentRuleAndVerifyUrl(segmentModule) {
+  /**
+   * Saves the segment rule.
+   */
+  async saveSegmentRule() {
     await this.page.locator(this.locators.saveButton).first().click();
-    await waitForPaceLoader(this.page);  // wait for 1 second to make sure that the page is loaded
-    switch (segmentModule) {
-      case 'people':
-        await expect(this.page).toHaveURL(/.*people$/);
-        break;
-      case 'contracts':
-        await expect(this.page).toHaveURL(/.*contracts$/);
-        break;
-      default:
-        console.error('Invalid segment module');
-    }
+    await waitForPaceLoader(this.page);
   }
 
-  async verifySegmentInDropdown(segmentName) {
-    const segment = await this.page.waitForSelector(this.locators.dropdownTarget(segmentName));
-    expect(segment).not.toBeNull();
-  }
-
+  /**
+   * Creates a new segment with the specified name.
+   * @param {string} segmentName - The name of the segment to create.
+   */
   async createSegment(segmentName) {
     await this.fillSegmentName(segmentName);
     await this.setSegmentRule('address_country_code', 'BE');
-    await this.saveSegmentRuleAndVerifyUrl(segmentName);
+    await this.saveSegmentRule();
   }
 
+  /**
+   * Edits an existing segment with a new name.
+   * @param {string} newSegmentName - The new name for the segment.
+   */
   async editSegment(newSegmentName) {
     await this.fillSegmentName(newSegmentName);
-    await this.saveSegmentRuleAndVerifyUrl(newSegmentName);
+    await this.saveSegmentRule();
   }
 
-  async deleteSegment(segmentName) {
+  /**
+   * Deletes the current segment.
+   */
+  async deleteSegment() {
     this.page.on('dialog', dialog => dialog.accept());
-    await this.page.locator(this.locators.deleteButton).click();
-    await expect(this.page).toHaveURL(/.*people$/);
-    const dropdownText = await this.page.locator(this.locators.dropdown).first().innerText();
-    expect(dropdownText).not.toContain(segmentName);
+    await waitForPaceLoader(this.page);
+    await this.page.locator(this.locators.deleteButton).click();    
   }
 
+  /**
+   * Selects a rule number to add.
+   * @param {number} ruleNumber - The rule number to select.
+   * @returns {Locator} The locator for the selected rule.
+   */
   async selectRuleNumberToAdd(ruleNumber) {
     const rule = await this.page.locator(this.locators.FetchRule).nth(ruleNumber);
     return rule;
   }
 
+  /**
+   * Selects a property and text value for a rule.
+   * @param {number} ruleNo - The rule number.
+   * @param {string} property - The property to set.
+   * @param {string} value - The value to set for the property.
+   */
   async selectPropertyAndTextValue(ruleNo, property, value) {
     const rule = await this.selectRuleNumberToAdd(ruleNo);
     await rule.locator(this.locators.propertySelect).selectOption(property);
-    // const valueSelectExists = await rule.locator(this.locators.valueSelect).count();
-    // if (valueSelectExists > 0) { // If valueSelect exists, select the option
-    //     await rule.locator(this.locators.valueSelect).selectOption(value);
-    // } else {  // If valueSelect does not exist, fallback to valueTextField and fill the value
-    //    
     await rule.locator(this.locators.valueTextField).fill(value);
-    //}
   }
 
+  /**
+   * Selects a property and dropdown value for a rule.
+   * @param {number} ruleNo - The rule number.
+   * @param {string} property - The property to set.
+   * @param {string} value - The value to set for the property.
+   */
   async selectPropertyAndDropdownValue(ruleNo, property, value) {
     const rule = await this.selectRuleNumberToAdd(ruleNo);
     await rule.locator(this.locators.propertySelect).selectOption(property);
     await rule.locator(this.locators.valueSelectDropdown).selectOption(value);
   }
 
+  /**
+   * Selects a property, condition, and value for a rule.
+   * @param {number} ruleNo - The rule number.
+   * @param {string} property - The property to set.
+   * @param {string} condition - The condition to set.
+   * @param {string} value - The value to set for the property.
+   */
   async selectSePropertyCondionValue(ruleNo, property, condition, value) {
     const rule = await this.selectRuleNumberToAdd(ruleNo);
     await rule.locator(this.locators.propertySelect).selectOption(property);
@@ -110,10 +140,12 @@ class SegmentPage {
     await rule.locator(this.locators.valueSelect).selectOption(value);
   }
 
+  /**
+   * Clicks the button to add a new segment rule.
+   */
   async addSegmentRuleButton() {
     await this.page.locator(this.locators.addSegmentRuleBtn).click();
   }
-
 }
 
 module.exports = SegmentPage;
