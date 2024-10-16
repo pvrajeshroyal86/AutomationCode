@@ -8,14 +8,13 @@ module.exports = async config => {
 
     try {
         await page.goto(data.baseUrl);
-        await waitForPaceLoader(page);
         await page.locator('button.btn-auth').first().click();
         await page.locator('input#username').fill(data.userName);
         await page.locator('input#username').press('Tab');
         await page.locator('input#password').fill(data.password);
         await page.locator('button.btn-auth').click();
         await waitForPaceLoader(page);
-        await page.context().storageState({ path: './.auth/user.json' });
+        await page.context().storageState({ path: './library/.auth/user.json' });
     } catch (error) {
         console.error('Error during sign-in:', error);
     } finally {

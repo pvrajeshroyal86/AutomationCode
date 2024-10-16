@@ -11,7 +11,7 @@ const config = {
         launchOptions: { slowMo: 50 },
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
-        storageState: './.auth/user.json',
+        storageState: './library/.auth/user.json',
         trace: 'on', // Enable tracing
     },
     workers: 1,
