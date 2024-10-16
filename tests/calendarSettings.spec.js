@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
 const data = require('../environment.json');
 const CalendarSettingsPage = require('../pages/calendarSettingsPage');
-const { generateCalendarTypeName } = require('../utils/fakerLibrary');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { generateCalendarTypeName } = require('../library/utils/fakerLibrary');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 const CURRENT_YEAR = new Date().getFullYear();
 

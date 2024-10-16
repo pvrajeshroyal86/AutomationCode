@@ -1,5 +1,5 @@
 const { expect } = require('@playwright/test');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class CalendarSettingsPage {
     constructor(page) {

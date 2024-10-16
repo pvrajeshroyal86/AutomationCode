@@ -1,6 +1,6 @@
 const { test } = require('@playwright/test');
-const { waitForPaceLoader } = require('../utils/webUtils');
-const { generateTeamName } = require('../utils/fakerLibrary');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
+const { generateTeamName } = require('../library/utils/fakerLibrary');
 const DashboardPage = require('../pages/dashboardPage');
 
 test.describe('Dashboard Tests', () => {

@@ -1,4 +1,4 @@
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 const { expect } = require('@playwright/test');
 
 class AssetPage {

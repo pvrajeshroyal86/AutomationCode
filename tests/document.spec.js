@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 const data = require('../environment.json');
 const DocumentPage = require('../pages/documentPage');
-const { generateFolderName, generateDefaultFolderName } = require('../utils/fakerLibrary');
+const { generateFolderName, generateDefaultFolderName } = require('../library/utils/fakerLibrary');
 
 const EMPTY_PERSON_ID = 21508;
 const NEW_EMPLOYEE_FOLDER_NAME = generateFolderName();

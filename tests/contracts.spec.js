@@ -2,8 +2,8 @@ const { test, expect } = require('@playwright/test');
 const data = require('../environment.json');
 const newContract = require('../pages/contractTemplatePage');
 const createContract = require('../pages/createContractPage');
-const { waitForPaceLoader } = require('../utils/webUtils');
-const { generateRandomNumber, generateEmail } = require('../utils/fakerLibrary');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
+const { generateRandomNumber, generateEmail } = require('../library/utils/fakerLibrary');
 
 let CONTRACT_ID;
 let CONTRACT_ID_FOR_EMP_SIGNATURE;

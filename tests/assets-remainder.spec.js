@@ -1,7 +1,7 @@
 const { test } = require('@playwright/test');
 const AssetPage = require('../pages/assetPage');
 const ReusablePage = require('../pages/reusablePage');
-const { generateFutureDate, generateVendorName, generateSerialNumber } = require('../utils/fakerLibrary');
+const { generateFutureDate, generateVendorName, generateSerialNumber } = require('../library/utils/fakerLibrary');
 const data = require('../environment.json');
 
 const CF_ASSET_NAME = `Asset_${generateFutureDate()}`;

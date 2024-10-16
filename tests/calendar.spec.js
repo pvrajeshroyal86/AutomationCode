@@ -1,7 +1,7 @@
 const { test } = require('@playwright/test');
 const data = require('../environment.json');
 const Calendar = require('../pages/calendarPage');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 /**
  * Test to apply sick leave for an employee.
