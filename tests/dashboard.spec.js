@@ -21,6 +21,7 @@ test.describe('Dashboard Tests', () => {
     // Generate a new team name and add the team
     const teamName = generateTeamName();
     await dashboardPage.addTeam(teamName);
+    await waitForPaceLoader(page);
 
     // Verify the team is added by checking the URL and page title
     const addPeopleTitle = page.locator(dashboardPage.locators.mainTitle);

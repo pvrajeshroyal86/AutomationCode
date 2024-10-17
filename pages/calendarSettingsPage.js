@@ -7,7 +7,7 @@ class CalendarSettingsPage {
             mainTitle: 'h1.main-title',
             calendarTypesList: '.box.compact .list a',
             toggleInactiveTypes: 'label.input-switch',
-            addNewTypeButton: (year) => `.right.buttons a[href="/settings/daysOffTypes/add?year=${year}]`,
+            addNewTypeButton: `.right.buttons a`,
             nameInput: 'input#name',
             colorDropdown: '.form .dropdown .target',
             selectedColor: '.form .dropdown .calendar-color:nth-child(10)',
@@ -25,8 +25,8 @@ class CalendarSettingsPage {
      * Navigates to the add new calendar type page for the specified year.
      * @param {number} year - The year for which to add a new calendar type.
      */
-    async gotoAddNewType(year) {
-        await this.page.click(this.locators.addNewTypeButton(year));
+    async gotoAddNewType() {
+        await this.page.click(this.locators.addNewTypeButton);
     }
 
     /**
@@ -34,6 +34,7 @@ class CalendarSettingsPage {
      */
     async toggleInactiveTypes() {
         await this.page.locator(this.locators.toggleInactiveTypes).click();
+        await waitForPaceLoader(this.page);
     }
 
     /**

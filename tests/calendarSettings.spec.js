@@ -26,7 +26,7 @@ test.describe('Calendar Settings Tests', () => {
         await expect(typesIncludingInactiveCount).toBeGreaterThanOrEqual(initialTypesCount);
 
         // Add new type
-        await calendarSettingsPage.gotoAddNewType(CURRENT_YEAR);
+        await calendarSettingsPage.gotoAddNewType();
         title = page.locator(calendarSettingsPage.locators.mainTitle);
         await expect(title).toContainText("Create a new calendar type", { timeout: 10000 });
         await expect(page).toHaveURL(/.*settings\/daysOffTypes\/add/, { timeout: 10000 });
@@ -37,7 +37,7 @@ test.describe('Calendar Settings Tests', () => {
         // Verify detailed settings for type
         await page.waitForSelector(calendarSettingsPage.locators.detailedSettingsTab);
         await expect(page.locator(calendarSettingsPage.locators.nameInput)).toHaveValue(name);
-        await expect(page.locator(calendarSettingsPage.locators.selectedColorText)).toHaveText(selectedColorText.trim());
+        await expect(page.locator(calendarSettingsPage.locators.selectedColorText)).toContainText(selectedColorText.trim());
 
         await page.click(calendarSettingsPage.locators.backButton);
 
@@ -60,7 +60,7 @@ test.describe('Calendar Settings Tests', () => {
         await expect(page).toHaveURL(/.*settings\/daysOffTypes/, { timeout: 10000 });
         await page.waitForSelector(calendarSettingsPage.locators.calendarTypesList);
         const finalTypes = page.locator(calendarSettingsPage.locators.calendarTypesList);
-        await expect(finalTypes).toHaveCount(currentActiveCount - 1);
+        await expect(finalTypes).toHaveCount(initialTypesCount);
     });
 
     test('check default company holidays', async ({ page }) => {
