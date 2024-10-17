@@ -1,7 +1,7 @@
 const { expect } = require('@playwright/test');
 const data = require('../environment.json');
-const { generateRandomNumber } = require('../utils/fakerLibrary');
-const { waitForPaceLoader, waitForElementToDisappear } = require('../utils/webUtils');
+const { generateRandomNumber } = require('../library/utils/fakerLibrary');
+const { waitForPaceLoader, waitForElementToDisappear } = require('../library/utils/webUtils');
 const { fi } = require('@faker-js/faker');
 
 class CreateContractPage {
