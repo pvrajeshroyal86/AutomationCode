@@ -1,5 +1,4 @@
-const { waitForPaceLoader } = require('../utils/webUtils');
-const { expect } = require('@playwright/test');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class AssetPage {
   constructor(page) {
@@ -26,6 +25,10 @@ class AssetPage {
     };
   }
 
+  /**
+   * Adds a new custom field with the specified name.
+   * @param {string} name - The name of the custom field.
+   */
   async addNewCustomField(name) {
     await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.addNewCustomFieldButton).click();
@@ -38,6 +41,11 @@ class AssetPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Adds a new asset with the specified vendor and serial number.
+   * @param {string} vendor - The vendor of the asset.
+   * @param {string} serial - The serial number of the asset.
+   */
   async addNewAsset(vendor, serial) {
     await this.page.locator(this.locators.addAssetButton).click();
     await waitForPaceLoader(this.page);
@@ -50,17 +58,16 @@ class AssetPage {
     await this.page.locator(this.locators.saveAssetButton).click();
   }
 
+  /**
+   * Creates a reminder for the asset with the specified date.
+   * @param {string} reminderDate - The date of the reminder.
+   */
   async createReminderForAsset(reminderDate) {
     await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.assetItem).first().click();
     await this.page.locator(this.locators.editIcon).click();
     await this.page.locator(this.locators.reminderDateInput).first().fill(reminderDate);
     await this.page.locator(this.locators.saveChangesButton).click();
-  }
-
-  async verifyReminder(reminderDate) {
-    await waitForPaceLoader(this.page);
-    expect(this.page.locator(`div:nth-child(4) > .text-grey-90 span:has-text("Send date: ${reminderDate}")`).last()).toBeTruthy();
   }
 }
 

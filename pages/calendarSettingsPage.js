@@ -1,5 +1,4 @@
-const { expect } = require('@playwright/test');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class CalendarSettingsPage {
     constructor(page) {
@@ -8,7 +7,7 @@ class CalendarSettingsPage {
             mainTitle: 'h1.main-title',
             calendarTypesList: '.box.compact .list a',
             toggleInactiveTypes: 'label.input-switch',
-            addNewTypeButton: (year) => `.right.buttons a[href="/settings/daysOffTypes/add?year=${year}"]`,
+            addNewTypeButton: (year) => `.right.buttons a[href="/settings/daysOffTypes/add?year=${year}]`,
             nameInput: 'input#name',
             colorDropdown: '.form .dropdown .target',
             selectedColor: '.form .dropdown .calendar-color:nth-child(10)',
@@ -22,14 +21,26 @@ class CalendarSettingsPage {
         };
     }
 
+    /**
+     * Navigates to the add new calendar type page for the specified year.
+     * @param {number} year - The year for which to add a new calendar type.
+     */
     async gotoAddNewType(year) {
         await this.page.click(this.locators.addNewTypeButton(year));
     }
 
+    /**
+     * Toggles the visibility of inactive calendar types.
+     */
     async toggleInactiveTypes() {
         await this.page.locator(this.locators.toggleInactiveTypes).click();
     }
 
+    /**
+     * Adds a new calendar type with the specified name.
+     * @param {string} name - The name of the new calendar type.
+     * @returns {Promise<string>} The text of the selected color.
+     */
     async addNewCalendarType(name) {
         await this.page.fill(this.locators.nameInput, name);
         await this.page.click(this.locators.colorDropdown);
@@ -40,21 +51,26 @@ class CalendarSettingsPage {
         return selectedColorText;
     }
 
-    async verifyCalendarTypeDetails(name, selectedColorText) {
-        await this.page.waitForSelector(this.locators.detailedSettingsTab);
-        expect(await this.page.locator(this.locators.nameInput).inputValue()).toBe(name);
-        expect((await this.page.locator(this.locators.selectedColorText).innerText()).trim()).toBe(selectedColorText.trim());
-    }
-
+    /**
+     * Archives the currently selected calendar type.
+     */
     async archiveCalendarType() {
         await this.page.click(this.locators.archiveButton);
         await waitForPaceLoader(this.page);
     }
 
+    /**
+     * Selects a country from the country dropdown.
+     * @param {string} country - The country to select.
+     */
     async selectCountry(country) {
         await this.page.selectOption(this.locators.countrySelect, country);
     }
 
+    /**
+     * Gets the count of active holidays.
+     * @returns {Promise<number>} The count of active holidays.
+     */
     async getActiveHolidaysCount() {
         return await this.page.locator(this.locators.activeHolidays).count();
     }

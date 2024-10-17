@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
 const data = require('../environment.json');
 const CalendarSettingsPage = require('../pages/calendarSettingsPage');
-const { generateCalendarTypeName } = require('../utils/fakerLibrary');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { generateCalendarTypeName } = require('../library/utils/fakerLibrary');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -18,14 +18,14 @@ test.describe('Calendar Settings Tests', () => {
         const types = page.locator(calendarSettingsPage.locators.calendarTypesList);
         const initialTypesCount = await types.count();
 
-        // toggle inactive types visibility
+        // Toggle inactive types visibility
         await calendarSettingsPage.toggleInactiveTypes();
 
         let typesIncludingInactive = page.locator(calendarSettingsPage.locators.calendarTypesList);
         const typesIncludingInactiveCount = await typesIncludingInactive.count();
         await expect(typesIncludingInactiveCount).toBeGreaterThanOrEqual(initialTypesCount);
 
-        // add new type
+        // Add new type
         await calendarSettingsPage.gotoAddNewType(CURRENT_YEAR);
         title = page.locator(calendarSettingsPage.locators.mainTitle);
         await expect(title).toContainText("Create a new calendar type", { timeout: 10000 });
@@ -34,25 +34,27 @@ test.describe('Calendar Settings Tests', () => {
         const name = generateCalendarTypeName();
         const selectedColorText = await calendarSettingsPage.addNewCalendarType(name);
 
-        // detailed settings for type
-        await calendarSettingsPage.verifyCalendarTypeDetails(name, selectedColorText);
+        // Verify detailed settings for type
+        await page.waitForSelector(calendarSettingsPage.locators.detailedSettingsTab);
+        await expect(page.locator(calendarSettingsPage.locators.nameInput)).toHaveValue(name);
+        await expect(page.locator(calendarSettingsPage.locators.selectedColorText)).toHaveText(selectedColorText.trim());
 
         await page.click(calendarSettingsPage.locators.backButton);
 
-        // check if new type is added
+        // Check if new type is added
         await expect(page).toHaveURL(/.*settings\/daysOffTypes/, { timeout: 10000 });
         await page.waitForSelector(calendarSettingsPage.locators.calendarTypesList);
         const updatedTypes = page.locator(calendarSettingsPage.locators.calendarTypesList);
         await expect(updatedTypes).toHaveCount(initialTypesCount + 1);
 
-        // toggle active types visibility
+        // Toggle active types visibility
         await calendarSettingsPage.toggleInactiveTypes();
 
         typesIncludingInactive = page.locator(calendarSettingsPage.locators.calendarTypesList);
         const currentActiveCount = await typesIncludingInactive.count();
         await expect(typesIncludingInactive).toHaveCount(currentActiveCount);
 
-        // archive one of the types
+        // Archive one of the types
         await page.click('.box.compact .list a:nth-child(2)');
         await calendarSettingsPage.archiveCalendarType();
         await expect(page).toHaveURL(/.*settings\/daysOffTypes/, { timeout: 10000 });
