@@ -11,7 +11,7 @@ class AssetPage {
       linkReminderCheckbox: 'span:has-text("Link automatic reminder")',
       visibleIfFilledCheckbox: 'span:has-text("Visible if filled in")',
       continueButton: 'span:has-text("Continue")',
-      addAssetButton: 'div:has-text("assets") > a',
+      addAssetButton: 'div:has-text("assets") > a.action.add', // Updated locator to be more specific
       assetDropdownInput: 'form > .form > .fields > .field > .SelectItem > input:first-of-type',
       firstDropdownItem: '.list > li > span:first-of-type',
       addAssetConfirmButton: 'button:has-text("Add")',
@@ -38,7 +38,6 @@ class AssetPage {
     await this.page.locator(this.locators.linkReminderCheckbox).click();
     await this.page.locator(this.locators.visibleIfFilledCheckbox).click();
     await this.page.locator(this.locators.continueButton).click();
-    await waitForPaceLoader(this.page);
   }
 
   /**
@@ -47,6 +46,7 @@ class AssetPage {
    * @param {string} serial - The serial number of the asset.
    */
   async addNewAsset(vendor, serial) {
+    await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.addAssetButton).click();
     await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.assetDropdownInput).first().click();
