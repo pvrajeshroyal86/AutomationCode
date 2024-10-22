@@ -23,7 +23,8 @@ test('it can create a new contract template from a blank template', async ({ pag
   await contract.selectBlankTemplate();
   await contract.fillBlankContractTemplate(contractDescription);
   await contract.clickOnSaveBtn();
-  await contract.verifyContractInTable(contractName);
+  const tableText=await contract.filterEmployeeInContractsTable();
+  await expect(tableText).toContain(contractName);
 });
 
 test('it can create a new contract template from a word document', async ({ page }) => {
@@ -40,7 +41,8 @@ test('it can create a new contract template from a word document', async ({ page
   await contract.uploadWordDocument(filePath);
   await contract.fillBlankContractTemplate(contractDescription);
   await contract.clickOnSaveBtn();
-  await contract.verifyContractInTable(contractName);
+  const tableText=await contract.filterEmployeeInContractsTable();
+  await expect(tableText).toContain(contractName);
 });
 
 test.describe('Contract Pdf Suite', () => {
@@ -207,6 +209,7 @@ test.describe('Contract Employee Signature Suite', () => {
     await page.goto(data.baseUrl + `contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
     await waitForPaceLoader(page);
     await contract.ResetSignatureMethodForContract();
+    await expect(chooseSignMethod).toBeVisible();
   });
 
   test('Check for Employee Signature', async ({ page }) => {
@@ -223,6 +226,7 @@ test.describe('Contract Employee Signature Suite', () => {
     await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
     await contract.uploadPdfDocument(filePath);
     await contract.verifyForEmployeeSignature();
+    await expect(sendReminderLink).toBeVisible();
   });
 
   test('Check for No Signature', async ({ page }) => {

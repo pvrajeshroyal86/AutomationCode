@@ -319,7 +319,7 @@ class CreateContractPage {
   async ResetSignatureMethodForContract() {
     await this.selectContractResetSignOptionAndConfirm();
     const chooseSignMethod = this.page.locator(this.locators.chooseSigningMethodBtn);
-    await expect(chooseSignMethod).toBeVisible();
+   return chooseSignMethod;
   }
 
   async SendReminderAndVerify() {
@@ -341,7 +341,7 @@ class CreateContractPage {
     await this.page.locator(this.locators.sendEmailBtn).click();
     await waitForPaceLoader(this.page);
     const sendReminderLink = this.page.locator(this.locators.sendReminderLink);
-    await expect(sendReminderLink).toBeVisible();
+    return sendReminderLink
   }
 
   async verifyForNoSignature() {
