@@ -56,7 +56,7 @@ test.describe('Asset Tests', () => {
 
   test('Verify reminder has been added', async ({ page }) => {
     await page.goto(`${data.baseUrl}reminders`);
-    await waitForPaceLoader(this.page);
-    expect(this.page.locator(`div:nth-child(4) > .text-grey-90 span:has-text("Send date: ${reminderDate}")`).last()).toBeTruthy();
+    await waitForPaceLoader(page);
+    expect(page.locator(`div:nth-child(4) > .text-grey-90 span:has-text("Send date: ${REMINDER_DATE}")`).last()).toBeTruthy();
   });
 });
