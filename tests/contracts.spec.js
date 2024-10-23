@@ -208,7 +208,7 @@ test.describe('Contract Employee Signature Suite', () => {
     await waitForPaceLoader(page);
     await page.goto(data.baseUrl + `contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
     await waitForPaceLoader(page);
-    await contract.ResetSignatureMethodForContract();
+    const chooseSignMethod=await contract.ResetSignatureMethodForContract();
     await expect(chooseSignMethod).toBeVisible();
   });
 
@@ -225,7 +225,7 @@ test.describe('Contract Employee Signature Suite', () => {
     await contract.clickContinue();
     await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
     await contract.uploadPdfDocument(filePath);
-    await contract.verifyForEmployeeSignature();
+    const sendReminderLink=await contract.verifyForEmployeeSignature();
     await expect(sendReminderLink).toBeVisible();
   });
 
