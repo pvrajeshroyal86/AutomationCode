@@ -6,13 +6,13 @@ const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 const EDITABLE_SEGMENT_ID = 5;
 const DELETABLE_SEGMENT_ID = 7;
+const CREATED_SEGMENT_NAME = generateSegmentName();
 const EDITABLE_SEGMENT_NEW_NAME = generateSegmentName();
 const DELETABLE_SEGMENT_NAME = 'Niet vlees eters';
 
 test.describe('Segment Tests', () => {
   test('it can create a segment', async ({ page }) => {
-    const segmentPage = new SegmentPage(page);
-    const CREATED_SEGMENT_NAME = generateSegmentName();
+    const segmentPage = new SegmentPage(page);    
 
     await segmentPage.gotoNewSegmentBuilder();  // Navigate to the new segment builder page   
     await segmentPage.createSegment(CREATED_SEGMENT_NAME);   // Create a new segment
