@@ -1,5 +1,4 @@
-const { expect } = require('@playwright/test');
-const { waitForPaceLoader } = require('../utils/webUtils');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class DocumentPage {
   constructor(page) {
@@ -30,6 +29,10 @@ class DocumentPage {
     };
   }
 
+  /**
+   * Uploads a document to the page.
+   * @param {string} filePath - The path to the document to upload.
+   */
   async uploadDocument(filePath) {
     await this.page.locator(this.locators.uploadButton).click();
     await this.page.setInputFiles(this.locators.uploadInput, filePath);
@@ -37,16 +40,26 @@ class DocumentPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Selects the first folder from the list.
+   */
   async selectFirstFolder() {
     await this.page.locator(this.locators.selectItem).click();
     await this.page.waitForSelector(this.locators.selectItemList);
     await this.page.locator(this.locators.selectItemList).first().click();
   }
 
+  /**
+   * Saves the document.
+   */
   async saveDocument() {
     await this.page.locator(this.locators.saveButton).click();
   }
 
+  /**
+   * Creates a new folder with the specified name.
+   * @param {string} folderName - The name of the folder to create.
+   */
   async createFolder(folderName) {
     await this.page.locator(this.locators.createFolderButton).click();
     await this.page.locator(this.locators.folderNameInput).fill(folderName);
@@ -54,11 +67,20 @@ class DocumentPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Opens a folder with the specified name.
+   * @param {string} folderName - The name of the folder to open.
+   */
   async openFolder(folderName) {
     await this.page.locator(this.locators.folderRow(folderName)).click();
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Renames a folder from old name to new name.
+   * @param {string} oldName - The current name of the folder.
+   * @param {string} newName - The new name for the folder.
+   */
   async renameFolder(oldName, newName) {
     await this.page.locator(this.locators.folderDropdown(oldName)).click();
     await this.page.locator(this.locators.renameFolderOption(oldName)).click();
@@ -67,6 +89,10 @@ class DocumentPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Removes a folder with the specified name.
+   * @param {string} folderName - The name of the folder to remove.
+   */
   async removeFolder(folderName) {
     await this.page.locator(this.locators.folderDropdown(folderName)).click();
     await this.page.locator(this.locators.removeFolderOption(folderName)).click();
@@ -75,16 +101,22 @@ class DocumentPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Adds a default folder with the specified name.
+   * @param {string} folderName - The name of the default folder to add.
+   */
   async addDefaultFolder(folderName) {
     await this.page.locator(this.locators.addDefaultFolderButton).first().click();
     await this.page.locator(this.locators.defaultFolderNameInput).first().fill(folderName);
     await this.page.locator(this.locators.addDefaultFolderButton).first().click();
     await this.page.waitForSelector(this.locators.successNotification);
-    expect(await this.page.locator(this.locators.successNotification).innerText()).toContain('This folder has been added to the documents folder of all your employees');
-    await this.page.locator(this.locators.backToOverviewButton).first().click();
-    await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Renames a default folder from old name to new name.
+   * @param {string} oldName - The current name of the default folder.
+   * @param {string} newName - The new name for the default folder.
+   */
   async renameDefaultFolder(oldName, newName) {
     await this.page.locator(this.locators.folderDropdown(oldName)).click();
     await this.page.locator(this.locators.renameDefaultFolderOption(oldName)).click();
@@ -93,6 +125,10 @@ class DocumentPage {
     await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Removes a default folder with the specified name.
+   * @param {string} folderName - The name of the default folder to remove.
+   */
   async removeDefaultFolder(folderName) {
     await this.page.locator(this.locators.folderDropdown(folderName)).click();
     await this.page.locator(this.locators.removeDefaultFolderOption(folderName)).click();

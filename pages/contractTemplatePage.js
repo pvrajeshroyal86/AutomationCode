@@ -27,9 +27,9 @@ class ContractTemplatePage {
     await this.saveBtn.click();
   }
 
-  async verifyContractInTable(contractName) {
+  async filterEmployeeInContractsTable() {
     const tableText = await this.contractTable.innerText();
-    await expect(tableText).toContain(contractName);
+   return tableText;
   }
 
   async selectContractTypeAndFillContractName(contractType, contract_Name) {

@@ -6,24 +6,19 @@ const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 const EDITABLE_SEGMENT_ID = 5;
 const DELETABLE_SEGMENT_ID = 7;
+const CREATED_SEGMENT_NAME = generateSegmentName();
 const EDITABLE_SEGMENT_NEW_NAME = generateSegmentName();
 const DELETABLE_SEGMENT_NAME = 'Niet vlees eters';
 
 test.describe('Segment Tests', () => {
   test('it can create a segment', async ({ page }) => {
-    const segmentPage = new SegmentPage(page);
-    const CREATED_SEGMENT_NAME = generateSegmentName();
+    const segmentPage = new SegmentPage(page);    
 
-    // Navigate to the new segment builder page
-    await segmentPage.gotoNewSegmentBuilder();
-
-    // Create a new segment
-    await segmentPage.createSegment(CREATED_SEGMENT_NAME);
-
-    // Verify segment is created
-    await page.goto(data.baseUrl + 'settings/segments');
-    await page.waitForSelector(segmentPage.locators.dropdownTarget(CREATED_SEGMENT_NAME));
-    await expect(page.locator(segmentPage.locators.dropdownTarget(CREATED_SEGMENT_NAME))).toBeVisible();
+    await segmentPage.gotoNewSegmentBuilder();  // Navigate to the new segment builder page   
+    await segmentPage.createSegment(CREATED_SEGMENT_NAME);   // Create a new segment
+    await page.goto(data.baseUrl + 'settings/segments');  // Verify segment is created
+    await page.waitForSelector(segmentPage.locators.segmentsTable(CREATED_SEGMENT_NAME));
+    await expect(page.locator(segmentPage.locators.segmentsTable(CREATED_SEGMENT_NAME))).toBeVisible();
   });
 
   test('it can edit a segment', async ({ page }) => {
@@ -38,8 +33,8 @@ test.describe('Segment Tests', () => {
     // Verify segment is edited
     await page.goto(data.baseUrl + 'settings/segments');
     await waitForPaceLoader(page);
-    await page.waitForSelector(segmentPage.locators.dropdownTarget(EDITABLE_SEGMENT_NEW_NAME));
-    await expect(page.locator(segmentPage.locators.dropdownTarget(EDITABLE_SEGMENT_NEW_NAME))).toBeVisible();
+    await page.waitForSelector(segmentPage.locators.segmentsTable(EDITABLE_SEGMENT_NEW_NAME));
+    await expect(page.locator(segmentPage.locators.segmentsTable(EDITABLE_SEGMENT_NEW_NAME))).toBeVisible();
   });
 
   test('it can delete a segment', async ({ page }) => {
@@ -54,7 +49,7 @@ test.describe('Segment Tests', () => {
     // Verify segment is deleted
     await page.goto(data.baseUrl + 'settings/segments');
     await waitForPaceLoader(page);
-    await expect(page.locator(segmentPage.locators.dropdownTarget(DELETABLE_SEGMENT_NAME))).not.toBeVisible();
+    await expect(page.locator(segmentPage.locators.segmentsTable(DELETABLE_SEGMENT_NAME))).not.toBeVisible();
   });
 });
 
@@ -87,6 +82,6 @@ test('creating segment for contract module', async ({ page }) => {
   // Verify segment is created
   await page.goto(data.baseUrl + 'settings/segments');
   await waitForPaceLoader(page);
-  await page.waitForSelector(segmentPage.locators.dropdownTarget(CREATED_SEGMENT_NAME));
-  await expect(page.locator(segmentPage.locators.dropdownTarget(CREATED_SEGMENT_NAME))).toBeVisible();
+  await page.waitForSelector(segmentPage.locators.segmentsTable(CREATED_SEGMENT_NAME));
+  await expect(page.locator(segmentPage.locators.segmentsTable(CREATED_SEGMENT_NAME))).toBeVisible();
 });

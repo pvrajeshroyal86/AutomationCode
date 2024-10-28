@@ -1,5 +1,4 @@
-const { waitForPaceLoader } = require('../utils/webUtils');
-const { expect } = require('@playwright/test');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
 
 class AssetPage {
   constructor(page) {
@@ -12,7 +11,7 @@ class AssetPage {
       linkReminderCheckbox: 'span:has-text("Link automatic reminder")',
       visibleIfFilledCheckbox: 'span:has-text("Visible if filled in")',
       continueButton: 'span:has-text("Continue")',
-      addAssetButton: 'div:has-text("assets") > a',
+      addAssetButton: 'div:has-text("assets") > a.action.add', // Updated locator to be more specific
       assetDropdownInput: 'form > .form > .fields > .field > .SelectItem > input:first-of-type',
       firstDropdownItem: '.list > li > span:first-of-type',
       addAssetConfirmButton: 'button:has-text("Add")',
@@ -26,6 +25,10 @@ class AssetPage {
     };
   }
 
+  /**
+   * Adds a new custom field with the specified name.
+   * @param {string} name - The name of the custom field.
+   */
   async addNewCustomField(name) {
     await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.addNewCustomFieldButton).click();
@@ -35,10 +38,15 @@ class AssetPage {
     await this.page.locator(this.locators.linkReminderCheckbox).click();
     await this.page.locator(this.locators.visibleIfFilledCheckbox).click();
     await this.page.locator(this.locators.continueButton).click();
-    await waitForPaceLoader(this.page);
   }
 
+  /**
+   * Adds a new asset with the specified vendor and serial number.
+   * @param {string} vendor - The vendor of the asset.
+   * @param {string} serial - The serial number of the asset.
+   */
   async addNewAsset(vendor, serial) {
+    await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.addAssetButton).click();
     await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.assetDropdownInput).first().click();
@@ -50,17 +58,16 @@ class AssetPage {
     await this.page.locator(this.locators.saveAssetButton).click();
   }
 
+  /**
+   * Creates a reminder for the asset with the specified date.
+   * @param {string} reminderDate - The date of the reminder.
+   */
   async createReminderForAsset(reminderDate) {
     await waitForPaceLoader(this.page);
     await this.page.locator(this.locators.assetItem).first().click();
     await this.page.locator(this.locators.editIcon).click();
     await this.page.locator(this.locators.reminderDateInput).first().fill(reminderDate);
     await this.page.locator(this.locators.saveChangesButton).click();
-  }
-
-  async verifyReminder(reminderDate) {
-    await waitForPaceLoader(this.page);
-    expect(this.page.locator(`div:nth-child(4) > .text-grey-90 span:has-text("Send date: ${reminderDate}")`).last()).toBeTruthy();
   }
 }
 

@@ -15,10 +15,12 @@ class SegmentPage {
       valueTextField: '.field:nth-child(3) input',
       saveButton: '.button:has-text("Save")',
       dropdownTarget: (segmentName) => `#dropdown-target:has-text("${segmentName}")`,
+      segmentsTable:(segmentName) => `.tbody .td:has-text("${segmentName}")`,
       deleteButton: '.button.red',
       dropdown: '.page .dropdown',
       FetchRule: '.three.fields',
       addSegmentRuleBtn: '.button:has-text("Add new rule")',
+      peopleSegment: '.tbody .td:has-text("People")'
     };
   }
 
@@ -53,7 +55,7 @@ class SegmentPage {
   async setSegmentRule(property, value) {
     const rule = await this.page.locator(this.locators.ruleFields);
     await rule.locator(this.locators.propertySelect).selectOption(property);
-    await rule.locator(this.locators.valueSelect).selectOption(value);
+    await rule.locator(this.locators.valueSelectDropdown).selectOption(value);
   }
 
   /**
@@ -145,6 +147,14 @@ class SegmentPage {
    */
   async addSegmentRuleButton() {
     await this.page.locator(this.locators.addSegmentRuleBtn).click();
+  }
+
+  /**
+   * Opens the segment to edit.
+   */
+  async openSegmentToEdit()
+  {
+
   }
 }
 

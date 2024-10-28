@@ -2,8 +2,8 @@ const { test, expect } = require('@playwright/test');
 const data = require('../environment.json');
 const newContract = require('../pages/contractTemplatePage');
 const createContract = require('../pages/createContractPage');
-const { waitForPaceLoader } = require('../utils/webUtils');
-const { generateRandomNumber, generateEmail } = require('../utils/fakerLibrary');
+const { waitForPaceLoader } = require('../library/utils/webUtils');
+const { generateRandomNumber, generateEmail } = require('../library/utils/fakerLibrary');
 
 let CONTRACT_ID;
 let CONTRACT_ID_FOR_EMP_SIGNATURE;
@@ -23,7 +23,8 @@ test('it can create a new contract template from a blank template', async ({ pag
   await contract.selectBlankTemplate();
   await contract.fillBlankContractTemplate(contractDescription);
   await contract.clickOnSaveBtn();
-  await contract.verifyContractInTable(contractName);
+  const tableText=await contract.filterEmployeeInContractsTable();
+  await expect(tableText).toContain(contractName);
 });
 
 test('it can create a new contract template from a word document', async ({ page }) => {
@@ -40,7 +41,8 @@ test('it can create a new contract template from a word document', async ({ page
   await contract.uploadWordDocument(filePath);
   await contract.fillBlankContractTemplate(contractDescription);
   await contract.clickOnSaveBtn();
-  await contract.verifyContractInTable(contractName);
+  const tableText=await contract.filterEmployeeInContractsTable();
+  await expect(tableText).toContain(contractName);
 });
 
 test.describe('Contract Pdf Suite', () => {
@@ -206,7 +208,8 @@ test.describe('Contract Employee Signature Suite', () => {
     await waitForPaceLoader(page);
     await page.goto(data.baseUrl + `contracts/${CONTRACT_ID_FOR_EMP_SIGNATURE}`);
     await waitForPaceLoader(page);
-    await contract.ResetSignatureMethodForContract();
+    const chooseSignMethod=await contract.ResetSignatureMethodForContract();
+    await expect(chooseSignMethod).toBeVisible();
   });
 
   test('Check for Employee Signature', async ({ page }) => {
@@ -222,7 +225,8 @@ test.describe('Contract Employee Signature Suite', () => {
     await contract.clickContinue();
     await contract.fillContractTitle(Pdf_CONTRACT_TITLE);
     await contract.uploadPdfDocument(filePath);
-    await contract.verifyForEmployeeSignature();
+    const sendReminderLink=await contract.verifyForEmployeeSignature();
+    await expect(sendReminderLink).toBeVisible();
   });
 
   test('Check for No Signature', async ({ page }) => {
