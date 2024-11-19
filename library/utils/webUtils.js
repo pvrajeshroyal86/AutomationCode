@@ -5,28 +5,25 @@ const sleep = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 const waitForPaceLoader = async (page) => {
   try {
     // Wait until pace is done
+    await page.waitForSelector('.pace-done', { timeout: 100000 });
    
-    await page.waitForSelector(':is(body.pace-done,body.pace-running)', {timeout: 150000 });
- 
     // wait an extra 0.2 seconds just to be sure the page is fully loaded
     await sleep(200);
-   
   } catch (error) {
     console.error('Error waiting for pace loader:', error);
   }
  
   return page;
 };
- 
-const waitForPaceRunner = async (page) => {
+
+// Function to wait for the pace loader to appear
+const waitForPaceAlongRunnerLoader = async (page) => {
   try {
     // Wait until pace is done
+    await page.waitForSelector(':is(body.pace-done,body.pace-running)', { timeout: 150000 });
    
-    await page.waitForSelector('.pace-done', {timeout: 150000 });
- 
     // wait an extra 0.2 seconds just to be sure the page is fully loaded
     await sleep(200);
-   
   } catch (error) {
     console.error('Error waiting for pace loader:', error);
   }
@@ -38,7 +35,7 @@ const waitForPaceRunner = async (page) => {
 const waitForRequestHandled = async (page) => {
   try {
     // Wait until requests are handled
-    await page.waitForSelector('.requests-handled', { timeout: 150000 });
+    await page.waitForSelector('.requests-handled', { timeout: 100000 });
    
     // wait an extra 0.2 seconds just to be sure the page is fully loaded
     await sleep(200);
@@ -98,6 +95,7 @@ const waitForElementToDisappear = async (page, selector, tries = 'FIRST') => {
 // Exporting the functions so they can be used in other files
 module.exports = {
   waitForPaceLoader,
+  waitForPaceAlongRunnerLoader,
   waitForRequestHandled,
   waitForElementToDisappear
 };
